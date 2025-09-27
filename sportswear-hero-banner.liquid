@@ -1,0 +1,159 @@
+{% comment %}
+  This is the new and improved Hero Banner code.
+  Key improvements:
+  1. Banner Height setting: You can now easily change the banner's height in the theme editor to make it thinner or thicker.
+  2. Overlap Fix: The banner will no longer cover your navigation buttons like "Catalog."
+  3. Cleaner Code: Styles are separated for better performance and easier future edits.
+  4. Interactive Button: The button now has a subtle hover effect that fits your red and black theme.
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "Sportswear Hero Banner",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "banner_image",
+      "label": "Banner Image"
+    },
+    {
+      "type": "range",
+      "id": "banner_height",
+      "min": 200,
+      "max": 600,
+      "step": 20,
+      "unit": "px",
+      "label": "Banner Height",
+      "default": 340
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Championship Kicks, Unbeatable Prices"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "The ultimate superstore for every Dunk enthusiast."
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Explore the Collection"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sportswear Hero Banner"
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .hero-banner-wrapper {
+    position: relative;
+    text-align: center;
+    color: white;
+    /* This is the key fix to prevent the banner from covering your header/navigation */
+    z-index: 0;
+  }
+
+  .hero-banner-wrapper .banner-image {
+    display: block;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  .hero-banner-wrapper .banner-text-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.6);
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 650px;
+  }
+
+  .hero-banner-wrapper .banner-heading {
+    margin: 0 0 10px;
+    font-size: 2.8em;
+    font-weight: bold;
+    line-height: 1.1;
+  }
+
+  .hero-banner-wrapper .banner-subheading {
+    margin-bottom: 20px;
+    font-size: 1.3em;
+  }
+
+  .hero-banner-wrapper .banner-button {
+    padding: 14px 28px;
+    background-color: #d30000; /* Bold red for your theme */
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  .hero-banner-wrapper .banner-button:hover {
+    background-color: #a30000; /* Darker red on hover */
+    transform: scale(1.05);
+  }
+
+  /* Responsive styles for smaller screens */
+  @media (max-width: 768px) {
+    .hero-banner-wrapper .banner-heading {
+      font-size: 2em;
+    }
+    .hero-banner-wrapper .banner-subheading {
+      font-size: 1em;
+    }
+    .hero-banner-wrapper .banner-button {
+      padding: 12px 24px;
+    }
+  }
+</style>
+
+<div class="hero-banner-wrapper">
+  {% if section.settings.banner_image != blank %}
+    <img
+      src="{{ section.settings.banner_image | image_url: width: 1600 }}"
+      alt="{{ section.settings.banner_image.alt | escape }}"
+      class="banner-image"
+      style="height: {{ section.settings.banner_height }}px;"
+    >
+  {% else %}
+    {% comment %} Show a placeholder when no image is selected in the editor {% endcomment %}
+    <div class="shopify-section-placeholder" style="height: {{ section.settings.banner_height }}px; background-color: #222;">
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+    </div>
+  {% endif %}
+
+  <div class="banner-text-overlay">
+    {% if section.settings.heading != blank %}
+      <h1 class="banner-heading">{{ section.settings.heading | escape }}</h1>
+    {% endif %}
+    {% if section.settings.subheading != blank %}
+      <p class="banner-subheading">{{ section.settings.subheading | escape }}</p>
+    {% endif %}
+    {% if section.settings.button_link != blank and section.settings.button_text != blank %}
+      <a href="{{ section.settings.button_link }}" class="banner-button">
+        {{ section.settings.button_text | escape }}
+      </a>
+    {% endif %}
+  </div>
+</div>
