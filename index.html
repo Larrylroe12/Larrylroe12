@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Blueprint Program - Master Your Credit Journey</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        header .company {
+            font-size: 1rem;
+            color: #764ba2;
+            font-weight: 600;
+            margin-top: 0.3rem;
+            text-align: center;
+        }
+
+        header p {
+            text-align: center;
+            color: #666;
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23667eea" width="1200" height="600"/><rect fill="%23764ba2" width="600" height="600" x="600"/></svg>');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            padding: 3rem 0;
+        }
+
+        .topic-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .topic-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .topic-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .topic-card h3 {
+            color: #667eea;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .topic-card .icon {
+            font-size: 2.5rem;
+        }
+
+        .topic-card p {
+            color: #666;
+            font-size: 1.05rem;
+            margin-bottom: 1rem;
+        }
+
+        .topic-card .click-hint {
+            color: #764ba2;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 3rem;
+            max-width: 900px;
+            width: 100%;
+            margin: 2rem auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 2rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #764ba2;
+            transform: rotate(90deg);
+        }
+
+        .modal-content h2 {
+            color: #667eea;
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 4px solid #764ba2;
+            padding-bottom: 0.5rem;
+        }
+
+        .modal-content h3 {
+            color: #764ba2;
+            font-size: 1.7rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-content h4 {
+            color: #667eea;
+            font-size: 1.3rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .modal-content p {
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+            color: #555;
+        }
+
+        .modal-content ul, .modal-content ol {
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-content li {
+            margin-bottom: 0.8rem;
+            font-size: 1.05rem;
+            color: #555;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-left: 5px solid #667eea;
+            margin: 1.5rem 0;
+            border-radius: 5px;
+        }
+
+        .alert {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            border-left: 5px solid #d63031;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .alert h3 {
+            color: white;
+            margin-top: 0;
+            font-size: 1.8rem;
+        }
+
+        .alert p {
+            color: white;
+            font-size: 1.05rem;
+        }
+
+        .credit-card-visual {
+            background: linear-gradient(135deg, #e8f4f8 0%, #f0e8ff 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            color: #333;
+            margin: 2rem 0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 2px solid #667eea;
+        }
+
+        .credit-card-visual h4 {
+            color: #667eea;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .card h4 {
+            color: white;
+            margin-top: 0;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1rem;
+        }
+
+        .bureau-button {
+            display: block;
+            background: white;
+            color: #667eea;
+            padding: 0.8rem 1.5rem;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .bureau-button:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            border-left: 3px solid #667eea;
+            margin: 2rem 0;
+        }
+
+        .timeline-item {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.5rem;
+            top: 0;
+            width: 1rem;
+            height: 1rem;
+            background: #764ba2;
+            border-radius: 50%;
+            border: 3px solid white;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+        }
+
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 3rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .hero h2 {
+                font-size: 2rem;
+            }
+
+            .modal-content {
+                padding: 2rem 1.5rem;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .topics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>💳 Credit Blueprint Program</h1>
+            <p class="company">A Competitor 1 Global Credit Blueprint Program</p>
+            <p>Your Complete Guide to Building and Mastering Credit</p>
+        </div>
+    </header>
+
+    <div class="hero">
+        <div class="container">
+            <h2>Build Your Financial Future</h2>
+            <p>Click any topic below to learn everything you need to master your credit journey</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="topics-grid">
+            <div class="topic-card" onclick="openModal('secured-cards')">
+                <h3><span class="icon">🏦</span> Secured Credit Cards</h3>
+                <p>Learn how to use secured credit cards as your foundation for building credit, including how to add cash and graduate to unsecured cards.</p>
+                <div class="click-hint">Click to Learn More →</div>
+            </div>
+
+            <div class="topic-card" onclick="openModal('tradelines')">
+                <h3><span class="icon">📊</span> Authorized User Tradelines</h3>
+                <p>Discover how to leverage tradelines from family members or brokers to boost your credit profile with established payment history.</p>
+                <div class="click-hint">Click to Learn More →</div>
+            </div>
+
+            <div class="topic-card" onclick="openModal('bureaus')">
+                <h3><span class="icon">🔍</span> Credit Bureaus</h3>
+                <p>Understand Experian, Equifax, and TransUnion - what they do, how they work, and how to create your accounts with them.</p>
+                <div class="click-hint">Click to Learn More →</div>
+            </div>
+
+            <div class="topic-card" onclick="openModal('billing')">
+                <h3><span class="icon">📅</span> Credit Card Billing Cycles</h3>
+                <p>Master your credit card dates: cycle start, statement closing, and payment due dates to optimize your credit score.</p>
+                <div class="click-hint">Click to Learn More →</div>
+            </div>
+
+            <div class="topic-card" onclick="openModal('builder-loans')">
+                <h3><span class="icon">💰</span> Credit Builder Loans</h3>
+                <p>Build credit while saving money with credit builder loans that report to all three bureaus.</p>
+                <div class="click-hint">Click to Learn More →</div>
+            </div>
+
+            <div class="topic-card" onclick="openModal('pledge-loans')">
+                <h3><span class="icon">🏛️</span> Secured Pledge Loans</h3>
+                <p>Use your existing savings as collateral to establish credit history with secured pledge loans.</p>
+                <div class="click-hint">Click to Learn More →</div>
+            </div>
+
+            <div class="topic-card" onclick="openModal('credit-types')">
+                <h3><span class="icon">🎯</span> Types of Credit</h3>
+                <p>Understand revolving credit, installment loans, lines of credit, and how each impacts your credit profile.</p>
+                <div class="click-hint">Click to Learn More →</div>
+            </div>
+
+            <div class="topic-card" onclick="openModal('maintenance')">
+                <h3><span class="icon">⚙️</span> Building & Maintaining Credit</h3>
+                <p>Learn proven strategies to build strong credit from scratch and maintain excellent credit for life.</p>
+                <div class="click-hint">Click to Learn More →</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="secured-cards" class="modal" onclick="if(event.target === this) closeModal('secured-cards')">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('secured-cards')">×</button>
+            <h2>🏦 Secured Credit Cards: Your Foundation</h2>
+
+            <p>Secured credit cards are the cornerstone of credit building. <span class="highlight">They require a refundable cash deposit</span> that serves as your credit limit and collateral, making them accessible even with no credit history or poor credit.</p>
+
+            <h3>How Secured Credit Cards Work</h3>
+            <p>When you open a secured credit card, you deposit cash (typically between $200 and $2,500) into a special account with the card issuer. This deposit becomes your credit line. For example, if you deposit $500, you receive a credit card with a $500 limit.</p>
+
+            <div class="info-box">
+                <h4>Key Features of Secured Cards:</h4>
+                <ul>
+                    <li><strong>Deposit Amount:</strong> Most cards require $200-$500 minimum, though some accept as low as $49</li>
+                    <li><strong>Credit Reporting:</strong> Your payment activity is reported to all three major credit bureaus (Experian, Equifax, TransUnion)</li>
+                    <li><strong>Deposit Protection:</strong> Your deposit is held in a secured account and returned when you close the card in good standing or graduate to an unsecured card</li>
+                    <li><strong>Interest Rates:</strong> Typically range from 15% to 28% APR</li>
+                    <li><strong>Fees:</strong> Annual fees range from $0 to $49, depending on the issuer</li>
+                </ul>
+            </div>
+
+            <h3>How to Add Cash to Your Secured Credit Card</h3>
+            <p>There are several methods to fund your secured credit card deposit:</p>
+
+            <ol>
+                <li><strong>Bank Account Transfer:</strong> The most common method. Link your checking or savings account during application and transfer funds electronically (ACH transfer). This typically takes 1-3 business days.</li>
+                <li><strong>Wire Transfer:</strong> Faster than ACH but may incur fees ($15-$30). Funds available same day or next business day.</li>
+                <li><strong>Check or Money Order:</strong> Mail a check made payable to the card issuer. This is the slowest method (7-10 business days).</li>
+                <li><strong>Cash Deposit:</strong> Some issuers allow you to deposit cash at their branch locations if they have physical branches.</li>
+                <li><strong>Debit Card Funding:</strong> Certain issuers accept debit card payments for the initial deposit.</li>
+            </ol>
+
+            <div class="credit-card-visual">
+                <h4>💡 Pro Tips for Secured Cards:</h4>
+                <p><strong>Graduation Path:</strong> Many secured cards automatically review your account after 6-12 months of responsible use. If you've made on-time payments and demonstrated good credit habits, they'll upgrade you to an unsecured card and return your deposit.</p>
+                <p><strong>Increase Your Limit:</strong> You can typically add to your security deposit at any time to increase your credit limit, which can improve your credit utilization ratio.</p>
+                <p><strong>Choose Wisely:</strong> Look for secured cards with no annual fee, low interest rates, and a clear path to upgrading to an unsecured card.</p>
+            </div>
+
+            <h3>Best Practices with Secured Credit Cards</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h4>Pay in Full Monthly</h4>
+                    <p>Always pay your full statement balance before the due date to avoid interest charges and build positive payment history.</p>
+                </div>
+                <div class="card">
+                    <h4>Keep Utilization Low</h4>
+                    <p>Use less than 30% of your credit limit, ideally under 10%. If your limit is $500, keep your balance below $50.</p>
+                </div>
+                <div class="card">
+                    <h4>Set Up Auto-Pay</h4>
+                    <p>Never miss a payment. Set automatic payments for at least the minimum amount due.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tradelines" class="modal" onclick="if(event.target === this) closeModal('tradelines')">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('tradelines')">×</button>
+            <h2>📊 Authorized User Tradelines: Leveraging Credit History</h2>
+
+            <p>Tradelines are credit accounts that appear on your credit report. <span class="highlight">An authorized user tradeline occurs when you're added as an authorized user to someone else's credit card account</span>, allowing their positive payment history and credit limit to appear on your credit report.</p>
+
+            <h3>How Authorized User Tradelines Work</h3>
+            <p>When you become an authorized user on someone's credit card, the entire history of that account (including age, payment history, and credit limit) is typically added to your credit report. This can provide an immediate boost to your credit profile.</p>
+
+            <h4>The Two Ways to Get Tradelines:</h4>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h4>1. Family Member/Friend Addition (Free)</h4>
+                    <p><strong>Best Option:</strong> Ask a trusted family member or close friend with excellent credit to add you as an authorized user on one of their oldest credit cards with the highest limit and perfect payment history.</p>
+                    <p><strong>Requirements:</strong> They keep the physical card, you don't need access to the account. You're simply piggybacking on their positive credit history.</p>
+                    <p><strong>Timeline:</strong> The account typically appears on your credit report within 30-60 days after being added.</p>
+                </div>
+                <div class="card">
+                    <h4>2. Purchasing Tradelines from Brokers</h4>
+                    <p><strong>How It Works:</strong> Tradeline companies connect you with account holders willing to add authorized users for a fee.</p>
+                    <p><strong>Cost:</strong> Typically $150-$1,500+ per tradeline, depending on the age of the account, credit limit, and payment history.</p>
+                    <p><strong>Duration:</strong> Usually 60-90 days, after which you're removed from the account.</p>
+                </div>
+            </div>
+
+            <h3>The Positive Rewards of Authorized User Tradelines</h3>
+            <ul>
+                <li><strong>Instant Credit History:</strong> If you have a thin credit file or no credit history, authorized user accounts can establish a credit profile quickly</li>
+                <li><strong>Age of Credit:</strong> If added to an account that's 10 years old, that aged account now appears on your credit report, increasing your average age of accounts</li>
+                <li><strong>Credit Limit Boost:</strong> The authorized user account's credit limit is added to your total available credit, potentially improving your credit utilization ratio</li>
+                <li><strong>Payment History:</strong> Years of on-time payments from the primary account holder appear on your credit report</li>
+                <li><strong>Credit Mix:</strong> Adds another revolving credit account to your credit profile, which benefits your credit mix</li>
+            </ul>
+
+            <div class="info-box">
+                <h4>⚠️ Important Considerations:</h4>
+                <p><strong>Choose Carefully:</strong> Only become an authorized user on accounts with perfect payment history, low utilization (under 10%), and significant age (5+ years old for maximum benefit).</p>
+                <p><strong>Negative Impact:</strong> If the primary account holder misses payments or maxes out the card, it will negatively affect YOUR credit score too.</p>
+                <p><strong>Purchasing Tradelines:</strong> While legal, this is a temporary boost strategy. Focus on building your own positive credit history for long-term success.</p>
+                <p><strong>Verification:</strong> Not all credit card issuers report authorized user information to all three bureaus. Confirm reporting practices before being added.</p>
+            </div>
+
+            <h3>Maximizing Tradeline Benefits</h3>
+            <p>For optimal results, seek authorized user accounts with these characteristics:</p>
+            <ul>
+                <li>Account age of at least 5-10 years</li>
+                <li>High credit limit ($10,000+)</li>
+                <li>Utilization consistently under 10%</li>
+                <li>Perfect payment history (never a late payment)</li>
+                <li>Reports to all three credit bureaus</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="bureaus" class="modal" onclick="if(event.target === this) closeModal('bureaus')">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('bureaus')">×</button>
+            <h2>🔍 Understanding the Big Three: Experian, Equifax & TransUnion</h2>
+
+            <p>The three major credit bureaus collect, maintain, and distribute your credit information to lenders. Understanding how they work is essential to mastering your credit.</p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h4>Experian</h4>
+                    <p><strong>Headquarters:</strong> Dublin, Ireland (operates in Costa Mesa, CA)</p>
+                    <p><strong>Founded:</strong> 1996</p>
+                    <p><strong>What They Do:</strong> Maintains credit files on over 220 million U.S. consumers. Provides FICO Score 8 and their proprietary Experian PLUS Score.</p>
+                    <p><strong>Unique Features:</strong> Offers Experian Boost (allows utility and streaming payments to count toward credit scores)</p>
+                    <a href="https://www.experian.com" target="_blank" class="bureau-button">Visit Experian Website →</a>
+                    <a href="https://www.experian.com/consumer-products/free-credit-report.html" target="_blank" class="bureau-button" style="margin-top: 0.5rem;">Create Free Account →</a>
+                </div>
+                <div class="card">
+                    <h4>Equifax</h4>
+                    <p><strong>Headquarters:</strong> Atlanta, Georgia</p>
+                    <p><strong>Founded:</strong> 1899 (oldest bureau)</p>
+                    <p><strong>What They Do:</strong> Maintains credit information on over 800 million consumers worldwide. Provides Equifax Credit Score and FICO scores.</p>
+                    <p><strong>Unique Features:</strong> Provides specialized scores for auto loans and mortgages in addition to standard credit scores</p>
+                    <a href="https://www.equifax.com" target="_blank" class="bureau-button">Visit Equifax Website →</a>
+                    <a href="https://my.equifax.com/membercenter/" target="_blank" class="bureau-button" style="margin-top: 0.5rem;">Create Free Account →</a>
+                </div>
+                <div class="card">
+                    <h4>TransUnion</h4>
+                    <p><strong>Headquarters:</strong> Chicago, Illinois</p>
+                    <p><strong>Founded:</strong> 1968</p>
+                    <p><strong>What They Do:</strong> Serves more than 500 million consumers worldwide. Provides TransUnion Credit Score and VantageScore.</p>
+                    <p><strong>Unique Features:</strong> Offers TransUnion CreditView Dashboard and partners with many credit monitoring services</p>
+                    <a href="https://www.transunion.com" target="_blank" class="bureau-button">Visit TransUnion Website →</a>
+                    <a href="https://www.transunion.com/credit-monitoring" target="_blank" class="bureau-button" style="margin-top: 0.5rem;">Create Free Account →</a>
+                </div>
+            </div>
+
+            <h3>What Credit Bureaus Actually Do</h3>
+
+            <h4>1. Data Collection</h4>
+            <p>Credit bureaus collect information from various sources including:</p>
+            <ul>
+                <li><strong>Creditors:</strong> Credit card companies, mortgage lenders, auto loan companies, and student loan servicers report your account activity monthly</li>
+                <li><strong>Collection Agencies:</strong> Report unpaid debts that have been sent to collections</li>
+                <li><strong>Public Records:</strong> Bankruptcies, foreclosures, tax liens, and civil judgments</li>
+                <li><strong>Inquiries:</strong> Track when you apply for credit (hard inquiries) and when you check your own credit (soft inquiries)</li>
+            </ul>
+
+            <h4>2. Credit Report Creation</h4>
+            <p>Each bureau independently maintains your credit file, which includes:</p>
+            <ul>
+                <li>Personal identification information (name, address, SSN, date of birth, employment)</li>
+                <li>Credit accounts (tradelines) with payment history, balances, credit limits, and account status</li>
+                <li>Credit inquiries from the past two years</li>
+                <li>Public records (bankruptcies, foreclosures, liens)</li>
+                <li>Collections accounts</li>
+            </ul>
+
+            <h4>3. Credit Score Calculation</h4>
+            <p>While bureaus don't create FICO scores (Fair Isaac Corporation does), they provide the data used to calculate scores. Each bureau may have slightly different information, which is why your scores vary between bureaus.</p>
+
+            <div class="info-box">
+                <h4>Why Your Scores Differ Across Bureaus:</h4>
+                <ul>
+                    <li>Not all creditors report to all three bureaus</li>
+                    <li>Timing differences (creditors may report to each bureau on different days)</li>
+                    <li>Different scoring models (FICO 8, FICO 9, VantageScore 3.0, etc.)</li>
+                    <li>Errors or inaccuracies unique to one bureau's report</li>
+                </ul>
+            </div>
+
+            <h4>4. Credit Report Distribution</h4>
+            <p>When you apply for credit, lenders request your credit report from one or more bureaus. The bureau provides:</p>
+            <ul>
+                <li>Your complete credit report</li>
+                <li>Your credit score(s)</li>
+                <li>Risk assessment based on your credit profile</li>
+            </ul>
+
+            <h3>Your Rights Under the Fair Credit Reporting Act (FCRA)</h3>
+            <ul>
+                <li><strong>Free Annual Credit Reports:</strong> You're entitled to one free credit report from each bureau every 12 months at AnnualCreditReport.com</li>
+                <li><strong>Accuracy:</strong> You have the right to dispute inaccurate information on your credit reports</li>
+                <li><strong>Privacy:</strong> Credit bureaus can only provide your information to entities with a permissible purpose</li>
+                <li><strong>Notification:</strong> If adverse action is taken based on your credit report, you must be notified</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="billing" class="modal" onclick="if(event.target === this) closeModal('billing')">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('billing')">×</button>
+            <h2>📅 Mastering Credit Card Billing Cycles & Payment Dates</h2>
+
+            <p>Understanding your credit card billing cycle is crucial for optimizing your credit score and avoiding fees. <span class="highlight">Your billing cycle determines when your balance is reported to credit bureaus and when payments are due.</span></p>
+
+            <h3>The Three Critical Dates</h3>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>1. Cycle Start Date (Statement Opening Date)</h4>
+                    <p>This is the first day of your billing cycle, typically the day after your previous statement closing date. All purchases made from this date forward will appear on your next statement.</p>
+                    <p><strong>Example:</strong> If your cycle start date is January 5th, any purchases made on January 5th or later will appear on your next statement.</p>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>2. Statement Closing Date (Cycle Close Date)</h4>
+                    <p>This is the most important date for your credit score. <span class="highlight">This is the date your balance is reported to the credit bureaus.</span></p>
+                    <p><strong>What Happens:</strong></p>
+                    <ul>
+                        <li>Your card issuer calculates your total balance</li>
+                        <li>This balance is reported to Experian, Equifax, and TransUnion</li>
+                        <li>Your statement is generated showing all transactions from the billing cycle</li>
+                        <li>Your credit utilization is calculated based on this balance</li>
+                    </ul>
+                    <p><strong>Pro Strategy:</strong> Pay down your balance BEFORE the statement closing date to ensure a lower balance is reported to the bureaus, improving your credit utilization ratio.</p>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>3. Payment Due Date (Minimum Payment Date)</h4>
+                    <p>This is the deadline to make at least your minimum payment without incurring a late fee or penalty APR. This date is typically 21-25 days after your statement closing date.</p>
+                    <p><strong>Grace Period:</strong> The time between your statement closing date and payment due date is your grace period. If you pay your full statement balance by the due date, you won't be charged interest on purchases.</p>
+                </div>
+            </div>
+
+            <h3>Example Timeline</h3>
+            <div class="credit-card-visual">
+                <p><strong>Cycle Start Date:</strong> January 1st</p>
+                <p><strong>Statement Closing Date:</strong> January 31st (balance of $450 reported to bureaus)</p>
+                <p><strong>Payment Due Date:</strong> February 25th (you have until this date to pay at least the minimum)</p>
+                <p><strong>Next Cycle Start Date:</strong> February 1st</p>
+            </div>
+
+            <h3>Understanding Minimum Payments</h3>
+            <p>Your minimum payment is typically calculated as:</p>
+            <ul>
+                <li>1-3% of your statement balance, OR</li>
+                <li>A flat minimum (usually $25-$35), whichever is greater</li>
+                <li>Plus any past due amounts and fees</li>
+            </ul>
+
+            <div class="alert">
+                <h3>🚨 CRITICAL PAYMENT INFORMATION</h3>
+                <p><strong>Premium/Designer Credit Cards (Bank of America, Capital One, Chase, Citibank, Discover):</strong></p>
+                <p>If you pay your statement balance IN FULL every month, you will NOT have a minimum payment due the following month. Your account will show $0 minimum payment due until you carry a balance.</p>
+
+                <p style="margin-top: 1.5rem;"><strong>Subprime Credit Cards (First Premier, Credit One, Indigo, Milestone):</strong></p>
+                <p>These cards typically charge monthly fees (maintenance fees, program fees, annual fees divided into monthly charges). EVEN IF you pay your balance in full, you will still have a minimum payment due because of these recurring fees.</p>
+
+                <p style="margin-top: 1.5rem;"><strong>Example with First Premier:</strong></p>
+                <p>You pay your $200 balance in full on February 1st. Your March statement arrives showing a $10 monthly maintenance fee. You now have a minimum payment due of approximately $10-$25 (depending on their calculation method) even though you made no purchases.</p>
+            </div>
+
+            <h3>Optimal Payment Strategy for Credit Building</h3>
+            <ol>
+                <li><strong>Pay BEFORE the Statement Closing Date:</strong> Make a payment 3-5 days before your statement closes to ensure a low or zero balance is reported to credit bureaus. This maximizes your credit score.</li>
+                <li><strong>Keep Some Activity:</strong> Don't let your statement close at $0 every month. Allow $5-$10 to report, then pay it off after the statement closes. This shows active use without high utilization.</li>
+                <li><strong>Never Pay Late:</strong> Set up automatic payments for at least the minimum amount due. Late payments (30+ days late) devastate your credit score and stay on your report for 7 years.</li>
+                <li><strong>Pay in Full When Possible:</strong> Avoid interest charges by paying your full statement balance by the due date.</li>
+            </ol>
+
+            <h3>How to Find Your Billing Cycle Dates</h3>
+            <ul>
+                <li>Log into your online account or mobile app</li>
+                <li>Look at your most recent statement (dates are usually at the top)</li>
+                <li>Call customer service and request your billing cycle dates</li>
+                <li>Most issuers allow you to request a specific closing date that works better for your budget</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="builder-loans" class="modal" onclick="if(event.target === this) closeModal('builder-loans')">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('builder-loans')">×</button>
+            <h2>💰 Credit Builder Loans: Savings + Credit Building</h2>
+
+            <p>Credit builder loans are specifically designed to help people establish or rebuild credit while simultaneously building savings. <span class="highlight">Unlike traditional loans where you receive money upfront, credit builder loans hold your borrowed amount while you make payments.</span></p>
+
+            <h3>How Credit Builder Loans Work</h3>
+            <p>When you take out a credit builder loan, the lender deposits the loan amount (typically $300-$1,000) into a locked savings account or certificate of deposit (CD). You don't get access to this money until you've made all your payments.</p>
+
+            <div class="credit-card-visual">
+                <h4>The Process Step-by-Step:</h4>
+                <ol>
+                    <li><strong>Apply for the Loan:</strong> Choose your loan amount ($300-$1,000) and term length (6-24 months). No credit check required for most lenders.</li>
+                    <li><strong>Money Gets Locked:</strong> The lender places the full loan amount in a locked savings account or CD that you cannot access.</li>
+                    <li><strong>Make Monthly Payments:</strong> You make fixed monthly payments (typically $25-$150) that include interest and fees. The APR ranges from 6-16%.</li>
+                    <li><strong>Payments Reported to Bureaus:</strong> The lender reports your on-time payments to all three credit bureaus (Experian, Equifax, and TransUnion), building your positive payment history.</li>
+                    <li><strong>Receive Your Money:</strong> After making all payments, the locked account is released to you, minus interest and fees. You've built credit AND saved money.</li>
+                </ol>
+            </div>
+
+            <h3>Popular Credit Builder Loan Providers</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h4>Self (Self Lender)</h4>
+                    <p><strong>Loan Amount:</strong> $25-$150/month</p>
+                    <p><strong>Term:</strong> 24 months</p>
+                    <p><strong>APR:</strong> 15.92%</p>
+                    <p><strong>Best For:</strong> Most accessible, no credit check, reports to all three bureaus</p>
+                </div>
+                <div class="card">
+                    <h4>Credit Karma (Credit Builder)</h4>
+                    <p><strong>Loan Amount:</strong> Up to $1,000</p>
+                    <p><strong>Term:</strong> 12 months</p>
+                    <p><strong>APR:</strong> 0% (no interest or fees)</p>
+                    <p><strong>Best For:</strong> No cost option, but requires Credit Karma Money account</p>
+                </div>
+                <div class="card">
+                    <h4>Local Credit Unions</h4>
+                    <p><strong>Loan Amount:</strong> Varies by institution</p>
+                    <p><strong>Term:</strong> 6-24 months typically</p>
+                    <p><strong>APR:</strong> Usually 6-12%</p>
+                    <p><strong>Best For:</strong> Lower rates, personalized service, relationship building</p>
+                </div>
+            </div>
+
+            <h3>Benefits of Credit Builder Loans</h3>
+            <ul>
+                <li><strong>No Credit Required:</strong> Perfect for people with no credit history or poor credit</li>
+                <li><strong>Forced Savings:</strong> You're building savings while building credit</li>
+                <li><strong>Fixed Payments:</strong> Predictable monthly payments that fit your budget</li>
+                <li><strong>Payment History:</strong> Each on-time payment builds positive credit history</li>
+                <li><strong>Credit Mix:</strong> Adds an installment loan to your credit profile, improving your credit mix</li>
+                <li><strong>Low Risk:</strong> Since the money is locked, the lender takes minimal risk, making approval easier</li>
+            </ul>
+
+            <div class="info-box">
+                <h4>💡 Pro Tips:</h4>
+                <p><strong>Start Small:</strong> Begin with a smaller loan amount and shorter term (6-12 months) to minimize interest costs while building credit.</p>
+                <p><strong>Set Up Auto-Pay:</strong> Never miss a payment by setting up automatic payments from your checking account.</p>
+                <p><strong>Check Reporting:</strong> Verify the lender reports to all three credit bureaus before signing up.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="pledge-loans" class="modal" onclick="if(event.target === this) closeModal('pledge-loans')">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('pledge-loans')">×</button>
+            <h2>🏛️ Secured Pledge Loans: Leverage Your Savings</h2>
+
+            <p>A secured pledge loan (also called a savings-secured loan or passbook loan) allows you to borrow money using your existing savings account or certificate of deposit as collateral. <span class="highlight">Your savings remain in your account earning interest while you build credit.</span></p>
+
+            <h3>How Secured Pledge Loans Work</h3>
+            <p>You pledge your savings account balance as collateral for the loan. The bank or credit union places a hold on that amount in your account, and you receive a loan for up to the full amount of your savings (typically 90-100% of the balance).</p>
+
+            <div class="credit-card-visual">
+                <h4>The Process:</h4>
+                <ol>
+                    <li><strong>Have Savings:</strong> You need an existing savings account or CD with the lending institution. Amount typically ranges from $500 to $10,000+.</li>
+                    <li><strong>Apply for the Loan:</strong> Apply for a secured pledge loan equal to or less than your savings balance.</li>
+                    <li><strong>Savings Get Frozen:</strong> The lender places a hold on your savings equal to the loan amount. You cannot withdraw this money until the loan is repaid.</li>
+                    <li><strong>Receive Loan Funds:</strong> Unlike credit builder loans, you receive the full loan amount upfront in cash or deposited into your checking account.</li>
+                    <li><strong>Make Payments:</strong> Make monthly payments with interest (typically 2-3% above your savings account interest rate).</li>
+                    <li><strong>Build Credit:</strong> Payments are reported to credit bureaus, building your credit history.</li>
+                    <li><strong>Savings Released:</strong> Once paid off, the hold is released and you have full access to your savings again.</li>
+                </ol>
+            </div>
+
+            <h3>Key Benefits</h3>
+            <ul>
+                <li><strong>Keep Earning Interest:</strong> Your savings continue earning interest even while frozen</li>
+                <li><strong>Low Interest Rates:</strong> Typically 2-4% APR since the loan is fully secured</li>
+                <li><strong>Immediate Access to Cash:</strong> Unlike credit builder loans, you receive the money immediately</li>
+                <li><strong>No Credit Check:</strong> Approval is guaranteed since the loan is fully secured by your savings</li>
+                <li><strong>Large Loan Amounts:</strong> Can borrow larger amounts based on your savings balance</li>
+                <li><strong>Flexible Terms:</strong> Usually 6-36 month terms available</li>
+            </ul>
+
+            <h3>Best Institutions for Secured Pledge Loans</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h4>Local Credit Unions</h4>
+                    <p>Most credit unions offer secured pledge loans with favorable terms. Rates typically 2-4% APR. Personalized service and flexible terms.</p>
+                </div>
+                <div class="card">
+                    <h4>Community Banks</h4>
+                    <p>Many community banks offer passbook loans. Slightly higher rates than credit unions (3-5% APR) but more locations.</p>
+                </div>
+                <div class="card">
+                    <h4>Online Banks</h4>
+                    <p>Some online banks like Marcus by Goldman Sachs offer savings-secured loans. Convenient online application and management.</p>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h4>Smart Strategy:</h4>
+                <p>Use a secured pledge loan when you have savings but need to build credit. Take out a loan for $1,000, immediately deposit it into a separate savings account, and make monthly payments from that account. You'll pay minimal interest (the difference between loan interest and savings interest) while building excellent credit history.</p>
+            </div>
+
+            <h3>Secured Pledge Loan vs. Credit Builder Loan</h3>
+            <p><strong>Choose Secured Pledge Loan if:</strong></p>
+            <ul>
+                <li>You already have savings you want to leverage</li>
+                <li>You need immediate access to cash</li>
+                <li>You want the lowest possible interest rate</li>
+                <li>You want to borrow larger amounts ($2,000+)</li>
+            </ul>
+
+            <p><strong>Choose Credit Builder Loan if:</strong></p>
+            <ul>
+                <li>You have little or no savings</li>
+                <li>You want to build savings and credit simultaneously</li>
+                <li>You prefer not to tie up existing savings</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="credit-types" class="modal" onclick="if(event.target === this) closeModal('credit-types')">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('credit-types')">×</button>
+            <h2>🎯 Types of Credit: Understanding Your Options</h2>
+
+            <p>Your credit profile benefits from having a diverse mix of credit types. <span class="highlight">Lenders want to see that you can responsibly manage different types of credit accounts.</span> Credit mix accounts for about 10% of your FICO score.</p>
+
+            <h3>The Two Main Categories</h3>
+
+            <h4>1. Revolving Credit</h4>
+            <p>Revolving credit gives you a credit limit that you can use, pay down, and use again repeatedly. You're required to make minimum monthly payments, but the balance can revolve (carry over) from month to month.</p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h4>Credit Cards</h4>
+                    <p><strong>How It Works:</strong> You receive a credit limit (e.g., $1,000) and can charge purchases up to that limit. Pay it off and use it again.</p>
+                    <p><strong>Best For:</strong> Everyday purchases, building credit, rewards and cash back</p>
+                    <p><strong>Key Feature:</strong> Grace period (usually 21-25 days) to pay without interest</p>
+                </div>
+                <div class="card">
+                    <h4>Lines of Credit (LOC)</h4>
+                    <p><strong>How It Works:</strong> Similar to credit cards but typically used for larger purchases or emergencies. Can be secured or unsecured.</p>
+                    <p><strong>Best For:</strong> Large expenses, emergency funds, business purposes</p>
+                    <p><strong>Key Feature:</strong> Often lower interest rates than credit cards</p>
+                </div>
+                <div class="card">
+                    <h4>Home Equity Line of Credit (HELOC)</h4>
+                    <p><strong>How It Works:</strong> Borrow against your home's equity with a revolving credit line.</p>
+                    <p><strong>Best For:</strong> Home improvements, debt consolidation, major expenses</p>
+                    <p><strong>Key Feature:</strong> Tax-deductible interest in some cases, very low rates</p>
+                </div>
+            </div>
+
+            <h4>2. Installment Credit</h4>
+            <p>Installment credit involves borrowing a fixed amount of money and repaying it in equal monthly payments over a set period. Once paid off, the account is closed (unless you take out a new loan).</p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h4>Auto Loans</h4>
+                    <p><strong>Term:</strong> 36-72 months typically</p>
+                    <p><strong>Secured by:</strong> The vehicle itself</p>
+                    <p><strong>Impact:</strong> Adds installment credit to your mix, builds long-term payment history</p>
+                </div>
+                <div class="card">
+                    <h4>Mortgages</h4>
+                    <p><strong>Term:</strong> 15-30 years typically</p>
+                    <p><strong>Secured by:</strong> The home/property</p>
+                    <p><strong>Impact:</strong> Most significant installment account, shows long-term financial responsibility</p>
+                </div>
+                <div class="card">
+                    <h4>Personal Loans</h4>
+                    <p><strong>Term:</strong> 12-60 months typically</p>
+                    <p><strong>Secured or Unsecured:</strong> Usually unsecured</p>
+                    <p><strong>Impact:</strong> Flexible use, helps diversify credit mix</p>
+                </div>
+                <div class="card">
+                    <h4>Student Loans</h4>
+                    <p><strong>Term:</strong> 10-25 years typically</p>
+                    <p><strong>Type:</strong> Federal or private</p>
+                    <p><strong>Impact:</strong> Builds long-term payment history, common first credit account</p>
+                </div>
+                <div class="card">
+                    <h4>Credit Builder Loans</h4>
+                    <p><strong>Term:</strong> 6-24 months typically</p>
+                    <p><strong>Purpose:</strong> Specifically designed to build credit</p>
+                    <p><strong>Impact:</strong> Perfect for establishing installment credit history</p>
+                </div>
+            </div>
+
+            <h3>Understanding Revolving Credit in Detail</h3>
+
+            <h4>How Revolving Credit Impacts Your Score:</h4>
+            <ul>
+                <li><strong>Credit Utilization:</strong> The percentage of your available credit you're using. Keep under 30%, ideally under 10%.</li>
+                <li><strong>Payment History:</strong> Each on-time payment builds positive history.</li>
+                <li><strong>Available Credit:</strong> Having multiple revolving accounts with low balances shows responsible credit management.</li>
+                <li><strong>Age of Accounts:</strong> Keep old revolving accounts open to maintain average age of credit.</li>
+            </ul>
+
+            <div class="credit-card-visual">
+                <h4>Revolving Credit Example:</h4>
+                <p>You have a credit card with a $5,000 limit. You charge $500 (10% utilization). You pay it off. Next month, you charge $1,000 (20% utilization). You pay it off. The credit limit stays at $5,000, and you can continue using it indefinitely.</p>
+            </div>
+
+            <h3>Understanding Installment Credit in Detail</h3>
+
+            <h4>How Installment Credit Impacts Your Score:</h4>
+            <ul>
+                <li><strong>Payment History:</strong> Consistent on-time payments over years build strong credit.</li>
+                <li><strong>Credit Mix:</strong> Having both installment and revolving credit is ideal.</li>
+                <li><strong>Loan Balance Reduction:</strong> As you pay down the loan, it shows financial progress.</li>
+                <li><strong>Account Age:</strong> Long-term loans (like mortgages) significantly increase your average account age.</li>
+            </ul>
+
+            <div class="credit-card-visual">
+                <h4>Installment Credit Example:</h4>
+                <p>You take out a $10,000 personal loan at 8% APR for 36 months. Your monthly payment is $313.36. You make this same payment every month for 36 months. Once paid off, the account closes. If you need to borrow again, you'd apply for a new loan.</p>
+            </div>
+
+            <h3>The Ideal Credit Mix</h3>
+            <p>For optimal credit scores, aim for:</p>
+            <ul>
+                <li>2-3 revolving credit accounts (credit cards or lines of credit)</li>
+                <li>1-2 installment loans (auto loan, personal loan, mortgage, or credit builder loan)</li>
+                <li>All accounts with perfect payment history</li>
+                <li>Low utilization on revolving accounts (under 10%)</li>
+                <li>Mix of account ages (some older, some newer)</li>
+            </ul>
+
+            <div class="info-box">
+                <h4>⚠️ Important Note:</h4>
+                <p>Don't take out loans or open credit cards ONLY to improve your credit mix. The 10% impact on your score isn't worth taking on debt you don't need. Focus first on payment history (35%) and credit utilization (30%), then let credit mix develop naturally over time.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="maintenance" class="modal" onclick="if(event.target === this) closeModal('maintenance')">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('maintenance')">×</button>
+            <h2>⚙️ Building & Maintaining Excellent Credit</h2>
+
+            <p>Building credit from scratch and maintaining excellent credit requires understanding the key factors that impact your score and implementing proven strategies consistently over time.</p>
+
+            <h3>The 5 Factors That Determine Your Credit Score</h3>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h4>1. Payment History (35%)</h4>
+                    <p><strong>Most Important Factor</strong></p>
+                    <p>Every on-time payment helps. Every late payment (30+ days) hurts significantly and stays on your report for 7 years.</p>
+                    <p><strong>Strategy:</strong> Set up automatic payments for at least the minimum amount due on all accounts.</p>
+                </div>
+                <div class="card">
+                    <h4>2. Credit Utilization (30%)</h4>
+                    <p><strong>Second Most Important</strong></p>
+                    <p>The percentage of your available credit you're using. Calculated per card and overall.</p>
+                    <p><strong>Strategy:</strong> Keep utilization under 30% on each card, ideally under 10%. Pay down balances before statement closing dates.</p>
+                </div>
+                <div class="card">
+                    <h4>3. Length of Credit History (15%)</h4>
+                    <p><strong>Age Matters</strong></p>
+                    <p>Average age of all your accounts. Older accounts help your score.</p>
+                    <p><strong>Strategy:</strong> Keep old accounts open even if you don't use them. Don't close your oldest credit card.</p>
+                </div>
+                <div class="card">
+                    <h4>4. Credit Mix (10%)</h4>
+                    <p><strong>Variety Helps</strong></p>
+                    <p>Having different types of credit (revolving and installment) shows you can manage various accounts.</p>
+                    <p><strong>Strategy:</strong> Naturally develop mix over time. Don't force it.</p>
+                </div>
+                <div class="card">
+                    <h4>5. New Credit (10%)</h4>
+                    <p><strong>Recent Activity</strong></p>
+                    <p>Recent credit inquiries and newly opened accounts. Too many in a short time can hurt.</p>
+                    <p><strong>Strategy:</strong> Space out credit applications by at least 6 months. Multiple inquiries for the same type of loan (auto, mortgage) within 14-45 days count as one.</p>
+                </div>
+            </div>
+
+            <h3>Building Credit from Scratch: The Blueprint</h3>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>Month 1-3: Establish Your Foundation</h4>
+                    <ul>
+                        <li>Open a secured credit card with $200-$500 deposit</li>
+                        <li>Become an authorized user on a family member's old, well-managed credit card</li>
+                        <li>Set up automatic payments to ensure you never miss a payment</li>
+                        <li>Make small purchases ($10-$50) and pay in full each month</li>
+                    </ul>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>Month 4-6: Add Installment Credit</h4>
+                    <ul>
+                        <li>Open a credit builder loan ($500-$1,000)</li>
+                        <li>Continue using secured credit card with low utilization</li>
+                        <li>Maintain perfect payment history on all accounts</li>
+                        <li>Check your credit reports for accuracy</li>
+                    </ul>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>Month 7-12: Build History & Graduate</h4>
+                    <ul>
+                        <li>Request credit limit increase on secured card (or add to security deposit)</li>
+                        <li>Continue making all payments on time</li>
+                        <li>After 6-12 months, your secured card may automatically graduate to unsecured</li>
+                        <li>Consider applying for a second credit card (wait until 700+ score)</li>
+                        <li>Complete credit builder loan and receive savings</li>
+                    </ul>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>Month 12+: Maintain & Optimize</h4>
+                    <ul>
+                        <li>Maintain 3-5 credit cards with low utilization</li>
+                        <li>Pay balances before statement closing dates</li>
+                        <li>Request credit limit increases every 6-12 months</li>
+                        <li>Never close old accounts</li>
+                        <li>Monitor credit reports quarterly</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Advanced Credit Optimization Strategies</h3>
+
+            <h4>1. The Statement Date Payment Strategy</h4>
+            <div class="credit-card-visual">
+                <p><strong>Problem:</strong> High balance reported to bureaus even if you pay in full</p>
+                <p><strong>Solution:</strong> Make a payment 3-5 days BEFORE your statement closing date to lower the reported balance</p>
+                <p><strong>Example:</strong> You charge $500 on your $1,000 limit card (50% utilization). Before your statement closes, pay $450. Only $50 gets reported (5% utilization). Then pay the remaining $50 after the statement closes.</p>
+            </div>
+
+            <h4>2. The Credit Limit Increase Strategy</h4>
+            <ul>
+                <li>Request credit limit increases every 6-12 months</li>
+                <li>Provides instant utilization reduction without changing spending</li>
+                <li>Example: $500 balance on $1,000 limit = 50% utilization. Increase limit to $5,000 = 10% utilization</li>
+                <li>Most issuers allow online requests without hard inquiry</li>
+            </ul>
+
+            <h4>3. The Multiple Payment Strategy</h4>
+            <ul>
+                <li>Make 2-3 payments per month instead of one</li>
+                <li>KeKeeps reported balance low throughout the month</li>
+                <li>Especially useful if you use your card frequently</li>
+                <li>Example: Make payments every Friday to keep balance consistently low</li>
+            </ul>
+
+            <h4>4. The $0 Balance Warning</h4>
+            <div class="info-box">
+                <p><strong>Important:</strong> Don't let ALL your credit cards report $0 balance every month. Lenders want to see you actively using credit responsibly. Let $5-$10 report on at least one card each month, then pay it off after the statement closes. This shows activity without utilization issues.</p>
+            </div>
+
+            <h3>Credit Maintenance: Long-Term Excellence</h3>
+
+            <h4>Monthly Habits</h4>
+            <ul>
+                <li>Review all credit card statements for accuracy</li>
+                <li>Make payments before statement closing dates</li>
+                <li>Keep utilization under 10% on all cards</li>
+                <li>Check account activity for fraud</li>
+            </ul>
+
+            <h4>Quarterly Tasks</h4>
+            <ul>
+                <li>Check all three credit reports for accuracy at AnnualCreditReport.com</li>
+                <li>Dispute any errors or inaccuracies immediately</li>
+                <li>Review credit card benefits and rewards programs</li>
+                <li>Evaluate if you need to adjust your credit strategy</li>
+            </ul>
+
+            <h4>Annual Actions</h4>
+            <ul>
+                <li>Request credit limit increases on all cards</li>
+                <li>Review interest rates and consider balance transfer offers if carrying balances</li>
+                <li>Assess your credit mix and consider adding new account types if beneficial</li>
+                <li>Set new credit goals for the coming year</li>
+            </ul>
+
+            <div class="alert">
+                <h3>🎯 Your Credit Goals by Timeline</h3>
+                <p><strong>6 Months:</strong> Establish credit history, reach 650+ score</p>
+                <p><strong>12 Months:</strong> Build solid payment history, reach 700+ score</p>
+                <p><strong>24 Months:</strong> Achieve an excellent credit score (750+)</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Competitor 1 Global. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+    </script>
+</body>
+</html>
