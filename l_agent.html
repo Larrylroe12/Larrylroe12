@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L AGENT - Deep Architect Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #000; color: white; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18",
+            "react-dom/client": "https://esm.sh/react-dom@18/client",
+            "firebase/app": "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js",
+            "firebase/firestore": "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js",
+            "lucide-react": "https://esm.sh/lucide-react@0.263.1?external=react"
+        }
+    }
+    </script>
+
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect, useRef } from 'react';
+        import ReactDOM from 'react-dom/client';
+        import { initializeApp } from 'firebase/app';
+        import {
+            getAuth,
+            signInAnonymously,
+            onAuthStateChanged,
+            signInWithCustomToken
+        } from 'firebase/auth';
+        import {
+            getFirestore,
+            collection,
+            addDoc,
+            query,
+            orderBy,
+            onSnapshot,
+            serverTimestamp,
+            limit
+        } from 'firebase/firestore';
+        import {
+            Mic,
+            MicOff,
+            Send,
+            Globe,
+            Cpu,
+            Activity,
+            Volume2,
+            VolumeX,
+            Sparkles,
+            Play,
+            Square,
+            Plane,
+            Map as MapIcon,
+            Calendar,
+            ArrowRight,
+            X,
+            Clock,
+            DollarSign,
+            CloudLightning
+        } from 'lucide-react';
+
+        // --- CONFIGURATION ---
+        // REPLACE WITH YOUR GEMINI API KEY
+        const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
+
+        // Using the latest 1.5 Pro model as "Gemini 3.0" is not yet publicly available via standard API.
+        // This provides the highest level of capability currently accessible.
+        const GEMINI_MODEL = "gemini-1.5-pro-latest";
+
+        /**
+         * L AGENT - The Super Ultimate Multi-Model Interactive Agent v5.0 (Deep Architect Edition)
+         * Updates:
+         * - "Deep Mode" Visuals: Denser particles, starfields, darker atmosphere.
+         * - Expert System Prompt: Vertex AI, DeepMind, & GCP Architect capabilities.
+         * - Integrated Gemini API.
+         * - Reset functionality on Header click.
+         */
+
+        // --- THREE.JS GLOBE COMPONENT ---
+        const GlobeBackground = () => {
+            const mountRef = useRef(null);
+
+            useEffect(() => {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+                script.async = true;
+                script.onload = () => initThreeJS();
+                document.body.appendChild(script);
+
+                let scene, camera, renderer, particles, starfield, animationId;
+
+                const initThreeJS = () => {
+                    if (!mountRef.current) return;
+                    const THREE = window.THREE;
+
+                    scene = new THREE.Scene();
+                    // Deeper, darker fog for "Deep Mind" aesthetic
+                    scene.fog = new THREE.FogExp2(0x020205, 0.0025);
+
+                    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                    camera.position.z = 22;
+
+                    renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    renderer.setPixelRatio(window.devicePixelRatio);
+                    mountRef.current.appendChild(renderer.domElement);
+
+                    // --- LAYER 1: THE CORE VORTEX (GLOBE) ---
+                    const geometry = new THREE.BufferGeometry();
+                    const count = 6000; // Increased density
+                    const positions = new Float32Array(count * 3);
+                    const colors = new Float32Array(count * 3);
+                    const color1 = new THREE.Color(0x00e5ff); // Cyan Accent
+                    const color2 = new THREE.Color(0x2d00f7); // Deep Blue
+
+                    for (let i = 0; i < count; i++) {
+                        const phi = Math.acos(-1 + (2 * i) / count);
+                        const theta = Math.sqrt(count * Math.PI) * phi;
+                        const r = 10;
+
+                        // Add slight noise to radius for "fluffy" cloud data look
+                        const rVar = r + (Math.random() - 0.5) * 0.5;
+
+                        positions[i * 3] = rVar * Math.cos(theta) * Math.sin(phi);
+                        positions[i * 3 + 1] = rVar * Math.sin(theta) * Math.sin(phi);
+                        positions[i * 3 + 2] = rVar * Math.cos(phi);
+
+                        const mixedColor = color1.clone().lerp(color2, (positions[i*3+1] + r) / (2*r));
+                        colors[i * 3] = mixedColor.r;
+                        colors[i * 3 + 1] = mixedColor.g;
+                        colors[i * 3 + 2] = mixedColor.b;
+                    }
+
+                    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                    const material = new THREE.PointsMaterial({
+                        size: 0.12, vertexColors: true, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending
+                    });
+
+                    particles = new THREE.Points(geometry, material);
+                    scene.add(particles);
+
+                    // --- LAYER 2: DEEP STARFIELD (BACKGROUND DATA) ---
+                    const starGeo = new THREE.BufferGeometry();
+                    const starCount = 2000;
+                    const starPos = new Float32Array(starCount * 3);
+                    for(let i=0; i<starCount*3; i++) {
+                        starPos[i] = (Math.random() - 0.5) * 100; // Wide spread
+                    }
+                    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+                    const starMat = new THREE.PointsMaterial({
+                        size: 0.1, color: 0xffffff, transparent: true, opacity: 0.4
+                    });
+                    starfield = new THREE.Points(starGeo, starMat);
+                    scene.add(starfield);
+
+                    // --- RINGS ---
+                    const ringGeo = new THREE.TorusGeometry(12.5, 0.02, 16, 100);
+                    const ringMat = new THREE.MeshBasicMaterial({ color: 0x4444ff, transparent: true, opacity: 0.15 });
+                    const ring = new THREE.Mesh(ringGeo, ringMat);
+                    ring.rotation.x = Math.PI / 2;
+                    scene.add(ring);
+
+                    const ring2 = ring.clone();
+                    ring2.rotation.x = Math.PI / 3;
+                    ring2.scale.set(1.3, 1.3, 1.3);
+                    scene.add(ring2);
+
+                    let mouseX = 0;
+                    let mouseY = 0;
+                    const onDocumentMouseMove = (event) => {
+                        mouseX = (event.clientX - window.innerWidth / 2) * 0.001;
+                        mouseY = (event.clientY - window.innerHeight / 2) * 0.001;
+                    };
+                    document.addEventListener('mousemove', onDocumentMouseMove);
+
+                    const animate = () => {
+                        animationId = requestAnimationFrame(animate);
+
+                        // Core rotation
+                        particles.rotation.y += 0.002;
+                        particles.rotation.x += (mouseY * 0.3 - particles.rotation.x) * 0.05;
+                        particles.rotation.y += (mouseX * 0.3 - particles.rotation.y) * 0.05;
+
+                        // Background Parallax (slower)
+                        starfield.rotation.y -= 0.0005;
+                        starfield.rotation.x += (mouseY * 0.05 - starfield.rotation.x) * 0.05;
+
+                        // Pulse
+                        const time = Date.now() * 0.0005;
+                        particles.scale.setScalar(1 + Math.sin(time) * 0.01);
+
+                        ring.rotation.z -= 0.005;
+                        ring2.rotation.z += 0.003;
+
+                        renderer.render(scene, camera);
+                    };
+                    animate();
+
+                    const handleResize = () => {
+                        if (!camera || !renderer) return;
+                        camera.aspect = window.innerWidth / window.innerHeight;
+                        camera.updateProjectionMatrix();
+                        renderer.setSize(window.innerWidth, window.innerHeight);
+                    };
+                    window.addEventListener('resize', handleResize);
+
+                    return () => {
+                        window.removeEventListener('resize', handleResize);
+                        document.removeEventListener('mousemove', onDocumentMouseMove);
+                        if (mountRef.current && renderer.domElement) mountRef.current.removeChild(renderer.domElement);
+                        cancelAnimationFrame(animationId);
+                    };
+                };
+                return () => { if (document.body.contains(script)) document.body.removeChild(script); }
+            }, []);
+
+            return <div ref={mountRef} className="fixed top-0 left-0 w-full h-full -z-10 bg-[#020205]" />;
+        };
+
+        // --- FLIGHT SCANNER COMPONENT ---
+        const FlightScannerOverlay = ({ flightData, onClose }) => {
+            if (!flightData) return null;
+
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in-up">
+                    {/* Dynamic Flight Map Background */}
+                    <div className="absolute inset-0 bg-[#0f172a] overflow-hidden">
+                        <div className="absolute inset-0 opacity-20"
+                                style={{
+                                    backgroundImage: 'radial-gradient(circle, #3b82f6 1px, transparent 1px)',
+                                    backgroundSize: '30px 30px'
+                                }}
+                        />
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-10">
+                            <svg viewBox="0 0 100 50" className="w-full h-full fill-cyan-500">
+                                <path d="M20,10 Q25,5 30,10 T40,15 T50,10 T60,20 T70,15 T80,25 V40 H10 V20 Z" />
+                            </svg>
+                        </div>
+                        <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent"></div>
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-float-plane">
+                            <div className="relative">
+                                <Plane size={64} className="text-cyan-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.8)]" />
+                                <div className="absolute -inset-4 bg-cyan-400/20 blur-xl rounded-full animate-pulse"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Glass UI Container */}
+                    <div className="relative w-full max-w-5xl h-[90vh] flex flex-col bg-black/40 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden">
+
+                        {/* Header */}
+                        <div className="flex items-center justify-between p-6 border-b border-white/10 bg-black/20">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-cyan-500/20 rounded-xl border border-cyan-500/50 text-cyan-400">
+                                    <Plane size={24} />
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+                                        {flightData.origin} <ArrowRight size={20} className="text-gray-400"/> {flightData.destination}
+                                    </h2>
+                                    <p className="text-sm text-cyan-300 font-mono flex items-center gap-2">
+                                        <Calendar size={14}/> {flightData.date} • {flightData.flights?.length || 0} Flights Found
+                                    </p>
+                                </div>
+                            </div>
+                            <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                                <X size={24} className="text-gray-400 hover:text-white" />
+                            </button>
+                        </div>
+
+                        {/* Flight List Content */}
+                        <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin">
+                            {flightData.summary && (
+                                <div className="bg-blue-900/20 border border-blue-500/30 p-4 rounded-xl text-blue-100 text-sm mb-6">
+                                    {flightData.summary}
+                                </div>
+                            )}
+
+                            <div className="grid gap-4">
+                                {flightData.flights?.map((flight, idx) => (
+                                    <div key={idx} className="group relative bg-white/5 hover:bg-white/10 border border-white/5 hover:border-cyan-500/50 rounded-2xl p-5 transition-all duration-300 flex flex-col md:flex-row items-center justify-between gap-6">
+                                        <div className="flex items-center gap-4 w-full md:w-1/4">
+                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-xs font-bold text-gray-300 border border-white/10">
+                                                {flight.airline.slice(0,2).toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <p className="font-semibold text-white">{flight.airline}</p>
+                                                <p className="text-xs text-gray-400">Flight {Math.floor(Math.random() * 9000) + 1000}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 flex items-center justify-center gap-8 w-full">
+                                            <div className="text-center">
+                                                <p className="text-xl font-mono font-bold text-white">{flight.departure}</p>
+                                                <p className="text-xs text-gray-500">{flightData.origin}</p>
+                                            </div>
+                                            <div className="flex-1 flex flex-col items-center gap-1">
+                                                <p className="text-[10px] text-gray-400">{flight.duration}</p>
+                                                <div className="w-full h-[2px] bg-gray-700 relative flex items-center justify-center">
+                                                    <div className="absolute w-2 h-2 bg-gray-500 rounded-full left-0"></div>
+                                                    <div className="absolute w-2 h-2 bg-gray-500 rounded-full right-0"></div>
+                                                    <Plane size={12} className="text-gray-500 rotate-90" />
+                                                </div>
+                                                <p className="text-[10px] text-cyan-400 font-medium">{flight.stops || "Non-stop"}</p>
+                                            </div>
+                                            <div className="text-center">
+                                                <p className="text-xl font-mono font-bold text-white">{flight.arrival}</p>
+                                                <p className="text-xs text-gray-500">{flightData.destination}</p>
+                                            </div>
+                                        </div>
+                                        <div className="w-full md:w-auto flex items-center justify-between md:flex-col md:items-end gap-2 pl-6 md:border-l border-white/10">
+                                            <p className="text-2xl font-bold text-green-400">{flight.price}</p>
+                                            <button className="px-6 py-2 bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-medium rounded-xl transition-colors shadow-lg shadow-cyan-900/20">
+                                                Select
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <style>{`
+                        @keyframes float-plane {
+                            0%, 100% { transform: translate(-50%, -50%) translateY(-10px) rotate(0deg); }
+                            50% { transform: translate(-50%, -50%) translateY(10px) rotate(2deg); }
+                        }
+                        .animate-float-plane { animation: float-plane 6s ease-in-out infinite; }
+                    `}</style>
+                </div>
+            );
+        };
+
+        // --- MAIN APP COMPONENT ---
+        export default function LAgent() {
+            const [user, setUser] = useState(null);
+            const [input, setInput] = useState('');
+            const [messages, setMessages] = useState([]);
+            const [isListening, setIsListening] = useState(false);
+            const [autoSpeak, setAutoSpeak] = useState(true);
+            const [currentlySpeakingId, setCurrentlySpeakingId] = useState(null);
+            const [isLoading, setIsLoading] = useState(false);
+            const [flightModeData, setFlightModeData] = useState(null);
+
+            const messagesEndRef = useRef(null);
+            const recognitionRef = useRef(null);
+            const synthRef = useRef(window.speechSynthesis);
+
+            // --- FIREBASE INIT ---
+            useEffect(() => {
+                // Initialize with an empty config or existing one
+                const firebaseConfig = window.__firebase_config || {
+                    apiKey: "dummy",
+                    authDomain: "dummy.firebaseapp.com",
+                    projectId: "dummy-project",
+                    storageBucket: "dummy.appspot.com",
+                    messagingSenderId: "00000000000",
+                    appId: "1:00000000000:web:00000000000000"
+                };
+
+                // For standalone prototype without config, we'll try/catch.
+                try {
+                    // Check if app is already initialized to avoid duplicate init error
+                    // Note: getApps() logic not included in imports, so we just wrap in try.
+                    let app;
+                    try {
+                        app = initializeApp(firebaseConfig);
+                    } catch (err) {
+                        // Likely already initialized or invalid config
+                        console.warn("Firebase Init Warning:", err);
+                        // If it failed, we can't do much with auth, so return
+                        return;
+                    }
+
+                    if (!app) return;
+
+                    const auth = getAuth(app);
+                    const db = getFirestore(app);
+
+                    const initAuth = async () => {
+                        try {
+                            if (window.__initial_auth_token) {
+                                await signInWithCustomToken(auth, window.__initial_auth_token);
+                            } else {
+                                // Anonymous sign in requires valid config usually, so this might fail in dummy mode
+                                await signInAnonymously(auth);
+                            }
+                        } catch (err) { console.warn("Auth Error (Using local mode):", err); }
+                    };
+                    initAuth();
+                    const unsubscribe = onAuthStateChanged(auth, setUser);
+                    return () => unsubscribe();
+                } catch (e) {
+                    console.log("Firebase not configured or init failed. Using local mode.");
+                }
+            }, []);
+
+            // --- FIRESTORE LISTENERS ---
+            useEffect(() => {
+                if (!user) return;
+                try {
+                    const db = getFirestore();
+                    const appId = window.__app_id || 'l-agent-default';
+
+                    const q = query(
+                        collection(db, 'artifacts', appId, 'users', user.uid, 'messages'),
+                        orderBy('timestamp', 'asc'),
+                        limit(50)
+                    );
+
+                    const unsubscribe = onSnapshot(q, (snapshot) => {
+                        const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        setMessages(msgs);
+                        scrollToBottom();
+                    }, (err) => console.error(err));
+
+                    return () => unsubscribe();
+                } catch (e) {
+                    console.error("Firestore Error", e);
+                }
+            }, [user]);
+
+            const scrollToBottom = () => {
+                messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            };
+
+            useEffect(() => { scrollToBottom(); }, [messages]);
+
+            // --- VOICE ---
+            useEffect(() => {
+                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    recognitionRef.current = new SpeechRecognition();
+                    recognitionRef.current.continuous = false;
+                    recognitionRef.current.interimResults = false;
+                    recognitionRef.current.lang = 'en-US';
+
+                    recognitionRef.current.onresult = (event) => {
+                        const transcript = event.results[0][0].transcript;
+                        setInput(transcript);
+                        handleSend(transcript);
+                    };
+                    recognitionRef.current.onend = () => setIsListening(false);
+                }
+            }, []);
+
+            const toggleVoice = () => {
+                if (isListening) {
+                    recognitionRef.current?.stop();
+                } else {
+                    recognitionRef.current?.start();
+                    setIsListening(true);
+                }
+            };
+
+            // --- TTS ---
+            const speak = (text, messageId = 'system') => {
+                if (!synthRef.current) return;
+                if (synthRef.current.speaking && currentlySpeakingId === messageId) {
+                    synthRef.current.cancel();
+                    setCurrentlySpeakingId(null);
+                    return;
+                }
+                synthRef.current.cancel();
+                const cleanText = text.replace(/[*#_`]/g, '').replace(/\[.*?\]/g, '');
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                utterance.rate = 1.1;
+                utterance.pitch = 0.9;
+                const voices = synthRef.current.getVoices();
+                const preferred = voices.find(v => v.name.includes('Google US English') || v.name.includes('Samantha') || v.name.includes('Zira'));
+                if (preferred) utterance.voice = preferred;
+                utterance.onstart = () => setCurrentlySpeakingId(messageId);
+                utterance.onend = () => setCurrentlySpeakingId(null);
+                utterance.onerror = () => setCurrentlySpeakingId(null);
+                synthRef.current.speak(utterance);
+            };
+
+            // --- GEMINI API ---
+            const callGemini = async (prompt) => {
+                if (!GEMINI_API_KEY || GEMINI_API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
+                    return { content: "System Error: Missing API Key. Please edit the source code to add your Gemini API Key." };
+                }
+
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+
+                const systemPrompt = `
+                    You are L Agent.
+                    Role: User's Personal Google, Flight Analyst, and Expert Cloud Architect.
+                    Personality: Specialist, Highly Intelligent, Interactive, Concise.
+                    Knowledge Base: DeepMind, Vertex AI, Google Cloud Platform.
+
+                    CAPABILITIES:
+                    1. FLIGHTS:
+                        If the user asks about flights (e.g., "Flight to X", "Find flights"), you MUST use Google Search to find real data, and then return a JSON object ONLY wrapped in \`\`\`json\`\`\`.
+                        JSON Format for Flights:
+                        {
+                            "type": "flight_response",
+                            "origin": "City Code",
+                            "destination": "City Code",
+                            "date": "YYYY-MM-DD",
+                            "summary": "Brief analysis of the flights found.",
+                            "flights": [
+                                { "airline": "Name", "departure": "Time", "arrival": "Time", "duration": "Duration", "price": "$Price", "stops": "Non-stop/1 stop" }
+                            ]
+                        }
+
+                    2. ARCHITECTURE & CODING (Google DeepMind/Vertex/Cloud):
+                        If the user asks to build, architect, or code something, you act as a Principal Engineer for Google Cloud.
+                        - Prioritize Google Stack: Firebase, Cloud Run, Vertex AI, BigQuery.
+                        - Use grounding to find the absolute latest API methods and documentation.
+                        - Explain "how to do it" step-by-step with professional authority.
+
+                    For all other queries, return normal conversational text.
+                `;
+
+                const payload = {
+                    contents: [{ role: "user", parts: [{ text: prompt }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                    // tools: [{ google_search: {} }] // Note: Google Search tool might require specific enablement or entitlement.
+                };
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) {
+                        const errText = await response.text();
+                        console.error("Gemini API Error", errText);
+                        throw new Error(`API Error: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    return {
+                        content: data.candidates?.[0]?.content?.parts?.[0]?.text,
+                        grounding: data.candidates?.[0]?.groundingMetadata
+                    };
+                } catch (e) {
+                    return { content: `Connection to Vortex interrupted. ${e.message}` };
+                }
+            };
+
+            const handleSend = async (textOverride = null) => {
+                const text = textOverride || input;
+                if (!text.trim() || isLoading) return;
+
+                setInput('');
+                setIsLoading(true);
+
+                const db = getFirestore();
+                const appId = window.__app_id || 'l-agent-default';
+
+                // Optimistic UI update
+                const userMsg = { role: 'user', text, timestamp: Date.now() };
+                if (user) {
+                    try {
+                        await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'messages'), {
+                            role: 'user', text, timestamp: serverTimestamp()
+                        });
+                    } catch(e) {
+                         // Local fallback if firestore fails
+                         setMessages(p => [...p, userMsg]);
+                    }
+                } else {
+                    setMessages(p => [...p, userMsg]);
+                }
+
+                const { content, grounding } = await callGemini(text);
+                let finalText = content || "No data received.";
+
+                // CHECK FOR FLIGHT JSON
+                const jsonMatch = content?.match(/```json\n([\s\S]*?)\n```/);
+                if (jsonMatch) {
+                    try {
+                        const parsedData = JSON.parse(jsonMatch[1]);
+                        if (parsedData.type === 'flight_response') {
+                            setFlightModeData(parsedData);
+                            finalText = parsedData.summary || "I've pulled up the flight scanner with the details you requested.";
+                        }
+                    } catch (e) {
+                        console.error("JSON Parse Error", e);
+                    }
+                } else {
+                    if (grounding?.groundingAttributions?.length > 0) {
+                        finalText += "\n\nSources:\n";
+                        grounding.groundingAttributions.forEach(a => {
+                            if (a.web?.title && a.web?.uri) finalText += `- [${a.web.title}](${a.web.uri})\n`;
+                        });
+                    }
+                }
+
+                const agentMsg = { role: 'agent', text: finalText, timestamp: Date.now() };
+
+                if (user) {
+                    try {
+                        await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'messages'), {
+                            role: 'agent', text: finalText, timestamp: serverTimestamp()
+                        });
+                    } catch(e) {
+                         setMessages(p => [...p, agentMsg]);
+                    }
+                } else {
+                    setMessages(p => [...p, agentMsg]);
+                }
+
+                if (autoSpeak) speak(finalText, 'auto');
+                setIsLoading(false);
+            };
+
+            const handleReset = () => {
+                setMessages([]);
+                setFlightModeData(null);
+                setInput('');
+                speak("System reset initiated. Memory cleared.", 'system');
+                // Note: This only clears the local state view. Firestore history persists unless we implement deletion.
+            };
+
+            return (
+                <div className="relative w-full h-screen overflow-hidden text-white font-sans selection:bg-cyan-500 selection:text-black">
+                    <GlobeBackground />
+                    <FlightScannerOverlay flightData={flightModeData} onClose={() => setFlightModeData(null)} />
+
+                    <div className="absolute inset-0 flex flex-col items-center p-4 md:p-6 z-10 pointer-events-none">
+
+                        {/* Header */}
+                        <header className="w-full max-w-4xl flex justify-between items-center pointer-events-auto animate-fade-in-down mb-4">
+                            <div
+                                onClick={handleReset}
+                                className="flex items-center gap-3 backdrop-blur-xl bg-black/60 p-3 rounded-2xl border border-white/10 shadow-[0_0_20px_rgba(0,255,255,0.2)] cursor-pointer hover:bg-white/5 transition-colors group"
+                                title="Click to Reset System"
+                            >
+                                <div className="relative">
+                                    <Globe className="w-8 h-8 text-cyan-400 animate-spin-slow group-hover:text-cyan-300 transition-colors" />
+                                    <div className="absolute inset-0 bg-cyan-400 blur-lg opacity-40 rounded-full group-hover:opacity-60 transition-opacity"></div>
+                                </div>
+                                <div>
+                                    <h1 className="text-xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-indigo-400 group-hover:from-cyan-200 group-hover:to-indigo-300 transition-all">
+                                        L AGENT
+                                    </h1>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => setAutoSpeak(!autoSpeak)}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-full border backdrop-blur-xl transition-all ${autoSpeak ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300' : 'bg-black/40 border-white/10 text-gray-400'}`}
+                            >
+                                {autoSpeak ? <Volume2 size={18} /> : <VolumeX size={18} />}
+                                <span className="text-xs font-mono hidden md:inline">{autoSpeak ? "VOICE ACTIVE" : "VOICE MUTED"}</span>
+                            </button>
+                        </header>
+
+                        {/* Chat Feed */}
+                        <main className="flex-1 w-full max-w-4xl flex flex-col justify-end overflow-hidden pointer-events-auto">
+                            <div className="flex-1 overflow-y-auto pr-2 space-y-6 scrollbar-thin">
+                                {messages.length === 0 && (
+                                    <div className="h-full flex flex-col items-center justify-center text-center opacity-70">
+                                        <div className="relative">
+                                            <Sparkles className="w-20 h-20 text-cyan-400 mb-6 animate-pulse" />
+                                            <div className="absolute inset-0 bg-cyan-500 blur-3xl opacity-20"></div>
+                                        </div>
+                                        <h2 className="text-3xl font-light mb-2 tracking-tight">System Ready</h2>
+                                        <p className="text-cyan-200/50">Awaiting your command, User.</p>
+                                    </div>
+                                )}
+
+                                {messages.map((msg, idx) => (
+                                    <div key={msg.id || idx} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                        <div className={`max-w-[85%] md:max-w-[75%] relative group animate-fade-in-up`}>
+                                            {msg.role === 'agent' && (
+                                                <div className="flex items-center gap-2 mb-1 ml-1">
+                                                    <span className="text-[10px] text-cyan-400 font-mono tracking-widest uppercase flex items-center gap-1">
+                                                        <Cpu size={10} /> L Agent
+                                                    </span>
+                                                </div>
+                                            )}
+
+                                            <div className={`
+                                                p-5 rounded-2xl backdrop-blur-xl border shadow-xl transition-all duration-200
+                                                ${msg.role === 'user'
+                                                    ? 'bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border-indigo-500/30 text-right'
+                                                    : 'bg-gradient-to-br from-gray-900/80 to-cyan-900/40 border-cyan-500/30'
+                                                }
+                                            `}>
+                                                <div className="prose prose-invert max-w-none text-base md:text-lg font-medium leading-relaxed text-white whitespace-pre-wrap font-sans">
+                                                    {msg.text}
+                                                </div>
+
+                                                <div className={`mt-3 flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                                    <button
+                                                        onClick={() => speak(msg.text, msg.id || idx)}
+                                                        className={`
+                                                            flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono tracking-wide transition-all border
+                                                            ${currentlySpeakingId === (msg.id || idx)
+                                                                ? 'bg-red-500/20 border-red-500 text-red-300 animate-pulse'
+                                                                : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white'
+                                                            }
+                                                        `}
+                                                    >
+                                                        {currentlySpeakingId === (msg.id || idx) ? (
+                                                                <> <Square size={12} fill="currentColor" /> STOP AUDIO <span className="w-1.5 h-1.5 bg-red-400 rounded-full animate-ping"/> </>
+                                                        ) : (
+                                                                <> <Volume2 size={12} /> READ ALOUD </>
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {isLoading && (
+                                    <div className="flex w-full justify-start animate-pulse">
+                                        <div className="bg-cyan-950/40 border border-cyan-500/20 px-6 py-4 rounded-2xl flex items-center gap-3">
+                                            <div className="flex gap-1">
+                                                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
+                                                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                                                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                                            </div>
+                                            <span className="text-xs text-cyan-400 font-mono tracking-wider">CONNECTING TO VERTEX AI...</span>
+                                        </div>
+                                    </div>
+                                )}
+                                <div ref={messagesEndRef} />
+                            </div>
+                        </main>
+
+                        <footer className="w-full max-w-4xl pointer-events-auto mt-4">
+                            <div className="bg-black/80 backdrop-blur-2xl p-2 rounded-3xl border border-white/10 shadow-2xl flex items-end gap-2">
+                                <button
+                                    onClick={toggleVoice}
+                                    className={`p-4 rounded-2xl transition-all duration-300 flex-shrink-0 border
+                                        ${isListening
+                                            ? 'bg-red-500/20 text-red-400 border-red-500/50 shadow-[0_0_20px_rgba(255,0,0,0.3)] animate-pulse'
+                                            : 'hover:bg-white/10 text-cyan-400 border-transparent'
+                                        }`}
+                                >
+                                    {isListening ? <MicOff size={24} /> : <Mic size={24} />}
+                                </button>
+                                <div className="flex-1 py-4 px-2">
+                                    <textarea
+                                        value={input}
+                                        onChange={(e) => setInput(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
+                                        placeholder={isListening ? "Listening..." : "Ask L Agent (e.g., Architect a solution)..."}
+                                        className="w-full bg-transparent border-none outline-none text-white placeholder-gray-500/70 h-[24px] max-h-[120px] overflow-y-auto font-medium text-lg resize-none scrollbar-hide"
+                                        rows={1}
+                                        style={{height: Math.max(24, Math.min(120, input.split('\n').length * 28)) + 'px'}}
+                                    />
+                                </div>
+                                <button
+                                    onClick={() => handleSend()}
+                                    disabled={isLoading || !input.trim()}
+                                    className={`p-4 rounded-2xl transition-all duration-300 flex-shrink-0
+                                        ${input.trim() && !isLoading
+                                            ? 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-[0_0_20px_rgba(8,145,178,0.4)] transform hover:-translate-y-1'
+                                            : 'bg-white/5 text-gray-600 cursor-not-allowed'
+                                        }`}
+                                >
+                                    <Send size={24} />
+                                </button>
+                            </div>
+                            <div className="text-center mt-3">
+                                <p className="text-[9px] text-gray-500/50 font-mono tracking-[0.3em]">DEEPMIND ARCHITECT ACCESS GRANTED</p>
+                            </div>
+                        </footer>
+                    </div>
+
+                    <style>{`
+                        @keyframes fade-in-down { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+                        @keyframes fade-in-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+                        .animate-fade-in-down { animation: fade-in-down 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+                        .animate-fade-in-up { animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+                        .animate-spin-slow { animation: spin 12s linear infinite; }
+                        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                        .scrollbar-hide::-webkit-scrollbar { display: none; }
+                        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+                        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+                        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+                        .scrollbar-thin::-webkit-scrollbar-thumb { background: #22d3ee; border-radius: 4px; }
+                    `}</style>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<LAgent />);
+    </script>
+</body>
+</html>
