@@ -203,7 +203,11 @@
 <div id="tooltip"></div>
 <div id="crosshair"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  window._threeError = false;
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
+  onerror="window._threeError=true; document.getElementById('loading-status').textContent='ERROR: Failed to load Three.js — check your connection.'; document.getElementById('loading-bar').style.background='#ff4466';"></script>
 <script>
 // ─── S&P 500 DATA ──────────────────────────────────────────────────────────────
 const SECTORS = [
@@ -357,10 +361,26 @@ const STOCKS_DATA = [
   { sym:"EXC",   name:"Exelon Corp.",         sector:10, mktcap:  42, chg:+0.2, price: 42.44 },
 ];
 
+// ─── GUARD: abort gracefully if Three.js failed to load ─────────────────────
+if (window._threeError || typeof THREE === 'undefined') {
+  document.getElementById('loading-status').textContent = 'ERROR: Three.js did not load. Check network connection.';
+  document.getElementById('loading-bar').style.background = '#ff4466';
+  throw new Error('Three.js not available');
+}
+
 // ─── SCENE SETUP ────────────────────────────────────────────────────────────────
 const scene    = new THREE.Scene();
 const camera   = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 5000);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+} catch(e) {
+  document.getElementById('loading-status').textContent = 'ERROR: WebGL not supported by your browser.';
+  document.getElementById('loading-bar').style.background = '#ff4466';
+  throw e;
+}
+
 renderer.setPixelRatio(devicePixelRatio);
 renderer.setSize(innerWidth, innerHeight);
 renderer.setClearColor(0x000005);
@@ -802,6 +822,9 @@ window.addEventListener('resize', () => {
 });
 
 // ─── LOADING SEQUENCE ─────────────────────────────────────────────────────────
+// Start rendering immediately so the scene is live behind the loading screen
+animate();
+
 const bar      = document.getElementById('loading-bar');
 const statTxt  = document.getElementById('loading-status');
 const msgs = [
@@ -820,8 +843,7 @@ const loadInt = setInterval(() => {
     setTimeout(() => {
       const ld = document.getElementById('loading');
       ld.style.opacity = '0';
-      setTimeout(() => ld.remove(), 1000);
-      animate();
+      setTimeout(() => { if (ld.parentNode) ld.remove(); }, 1000);
     }, 400);
   }
 }, 60);
