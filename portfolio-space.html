@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S&P 500 — Deep Space Portfolio</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; overflow: hidden; font-family: 'Courier New', monospace; }
+  canvas { display: block; }
+
+  #hud {
+    position: fixed; top: 0; left: 0; right: 0;
+    padding: 16px 24px;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    pointer-events: none; z-index: 100;
+  }
+  #title {
+    color: #fff;
+    font-size: 22px; font-weight: bold; letter-spacing: 4px;
+    text-shadow: 0 0 20px #00d4ff, 0 0 40px #0066ff;
+    text-transform: uppercase;
+  }
+  #subtitle {
+    color: #88ccff;
+    font-size: 11px; letter-spacing: 3px;
+    margin-top: 4px; text-transform: uppercase;
+  }
+  #stats {
+    text-align: right; color: #aaddff;
+    font-size: 12px; letter-spacing: 1px;
+    line-height: 1.8;
+  }
+  .stat-val { color: #00ffcc; font-weight: bold; }
+
+  #controls {
+    position: fixed; bottom: 20px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 12px; z-index: 100;
+  }
+  .ctrl-btn {
+    background: rgba(0,180,255,0.1);
+    border: 1px solid rgba(0,200,255,0.3);
+    color: #88ddff;
+    padding: 8px 18px; font-size: 11px;
+    letter-spacing: 2px; cursor: pointer;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    pointer-events: all;
+    border-radius: 2px;
+  }
+  .ctrl-btn:hover, .ctrl-btn.active {
+    background: rgba(0,200,255,0.25);
+    border-color: #00d4ff;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(0,200,255,0.4);
+  }
+
+  #tooltip {
+    position: fixed; z-index: 200;
+    background: rgba(0,8,20,0.92);
+    border: 1px solid rgba(0,200,255,0.5);
+    border-radius: 4px;
+    padding: 14px 18px;
+    min-width: 220px;
+    pointer-events: none;
+    display: none;
+    box-shadow: 0 0 30px rgba(0,150,255,0.3);
+  }
+  .tt-name {
+    font-size: 16px; font-weight: bold; color: #fff;
+    letter-spacing: 2px; margin-bottom: 4px;
+  }
+  .tt-sector {
+    font-size: 10px; letter-spacing: 2px;
+    color: #66aaff; margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  .tt-row {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: #88ccff;
+    margin: 4px 0; gap: 20px;
+  }
+  .tt-row span:last-child { color: #fff; font-weight: bold; }
+  .tt-change-pos { color: #00ffaa !important; }
+  .tt-change-neg { color: #ff4466 !important; }
+  .tt-divider { border-top: 1px solid rgba(0,150,255,0.2); margin: 8px 0; }
+
+  #panel {
+    position: fixed; right: 20px; top: 50%;
+    transform: translateY(-50%);
+    width: 220px; z-index: 100;
+    pointer-events: none;
+  }
+  .sector-item {
+    display: flex; align-items: center;
+    margin-bottom: 8px; cursor: pointer;
+    pointer-events: all;
+    padding: 6px 10px;
+    border-radius: 3px;
+    transition: background 0.2s;
+  }
+  .sector-item:hover { background: rgba(0,150,255,0.1); }
+  .sector-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%; margin-right: 10px; flex-shrink: 0;
+    box-shadow: 0 0 8px currentColor;
+  }
+  .sector-name {
+    font-size: 10px; letter-spacing: 1px;
+    color: #88aacc; text-transform: uppercase;
+    flex: 1;
+  }
+  .sector-pct {
+    font-size: 10px; font-weight: bold;
+    letter-spacing: 1px;
+  }
+
+  #crosshair {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 20px; height: 20px;
+    pointer-events: none; z-index: 50; opacity: 0.3;
+  }
+  #crosshair::before, #crosshair::after {
+    content: ''; position: absolute; background: #00d4ff;
+  }
+  #crosshair::before { width: 1px; height: 100%; left: 50%; transform: translateX(-50%); }
+  #crosshair::after { height: 1px; width: 100%; top: 50%; transform: translateY(-50%); }
+
+  #loading {
+    position: fixed; inset: 0;
+    background: #000; display: flex;
+    flex-direction: column; align-items: center; justify-content: center;
+    z-index: 999; transition: opacity 1s;
+  }
+  #loading-title {
+    font-size: 28px; color: #fff; letter-spacing: 6px;
+    text-transform: uppercase; margin-bottom: 8px;
+    text-shadow: 0 0 30px #00d4ff;
+  }
+  #loading-sub { font-size: 12px; color: #4488aa; letter-spacing: 3px; margin-bottom: 40px; }
+  #loading-bar-wrap {
+    width: 300px; height: 2px;
+    background: rgba(0,150,255,0.2); border-radius: 2px; overflow: hidden;
+  }
+  #loading-bar {
+    height: 100%; background: linear-gradient(90deg, #0066ff, #00ffcc);
+    width: 0; transition: width 0.1s; border-radius: 2px;
+    box-shadow: 0 0 10px #00d4ff;
+  }
+  #loading-status {
+    font-size: 10px; color: #336688; letter-spacing: 2px;
+    margin-top: 14px; text-transform: uppercase;
+  }
+
+  #help {
+    position: fixed; bottom: 70px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px; color: rgba(100,180,255,0.5);
+    letter-spacing: 2px; text-align: center;
+    pointer-events: none;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div id="loading-title">S&P 500</div>
+  <div id="loading-sub">Deep Space Portfolio Navigator</div>
+  <div id="loading-bar-wrap"><div id="loading-bar"></div></div>
+  <div id="loading-status">Initializing star map...</div>
+</div>
+
+<div id="hud">
+  <div>
+    <div id="title">S&P 500 Universe</div>
+    <div id="subtitle">Deep Space Portfolio Navigator</div>
+  </div>
+  <div id="stats">
+    <div>INDEX <span class="stat-val" id="spx-val">4,783.45</span></div>
+    <div>CHANGE <span class="stat-val" id="spx-chg">+1.24%</span></div>
+    <div>STARS <span class="stat-val">503</span></div>
+    <div>SECTORS <span class="stat-val">11</span></div>
+  </div>
+</div>
+
+<div id="panel">
+  <div id="sector-legend"></div>
+</div>
+
+<div id="controls">
+  <button class="ctrl-btn active" id="btn-orbit" onclick="setView('orbit')">Orbit</button>
+  <button class="ctrl-btn" id="btn-galaxy" onclick="setView('galaxy')">Galaxy</button>
+  <button class="ctrl-btn" id="btn-sector" onclick="setView('sector')">Sectors</button>
+  <button class="ctrl-btn" id="btn-reset" onclick="resetCamera()">Reset</button>
+</div>
+
+<div id="help">Drag to rotate &nbsp;·&nbsp; Scroll to zoom &nbsp;·&nbsp; Click a star to inspect</div>
+
+<div id="tooltip"></div>
+<div id="crosshair"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ─── S&P 500 DATA ──────────────────────────────────────────────────────────────
+const SECTORS = [
+  { name: "Information Technology", abbr: "IT",    color: 0x00d4ff, weight: 28.9 },
+  { name: "Health Care",            abbr: "HC",    color: 0x00ff88, weight: 13.1 },
+  { name: "Financials",             abbr: "FIN",   color: 0xffaa00, weight: 13.0 },
+  { name: "Consumer Discretionary", abbr: "CD",    color: 0xff6644, weight: 10.4 },
+  { name: "Industrials",            abbr: "IND",   color: 0x8866ff, weight:  8.5 },
+  { name: "Communication Services", abbr: "COMM",  color: 0xff44aa, weight:  8.4 },
+  { name: "Consumer Staples",       abbr: "CS",    color: 0x44ffff, weight:  6.1 },
+  { name: "Energy",                 abbr: "ENRG",  color: 0xffdd00, weight:  4.2 },
+  { name: "Real Estate",            abbr: "RE",    color: 0xaa88ff, weight:  2.5 },
+  { name: "Materials",              abbr: "MAT",   color: 0x66ff66, weight:  2.4 },
+  { name: "Utilities",              abbr: "UTIL",  color: 0xff8844, weight:  2.5 },
+];
+
+const STOCKS_DATA = [
+  // IT
+  { sym:"AAPL",  name:"Apple Inc.",           sector:0, mktcap:2890, chg:+1.2,  price:189.30 },
+  { sym:"MSFT",  name:"Microsoft Corp.",      sector:0, mktcap:2820, chg:+0.8,  price:378.91 },
+  { sym:"NVDA",  name:"NVIDIA Corp.",         sector:0, mktcap:1780, chg:+3.4,  price:722.48 },
+  { sym:"AVGO",  name:"Broadcom Inc.",        sector:0, mktcap: 680, chg:+1.1,  price:162.34 },
+  { sym:"ORCL",  name:"Oracle Corp.",         sector:0, mktcap: 420, chg:-0.3,  price:154.87 },
+  { sym:"CRM",   name:"Salesforce Inc.",      sector:0, mktcap: 290, chg:+0.6,  price:298.45 },
+  { sym:"AMD",   name:"Advanced Micro Dev.",  sector:0, mktcap: 270, chg:+2.1,  price:165.22 },
+  { sym:"INTC",  name:"Intel Corp.",          sector:0, mktcap: 150, chg:-1.4,  price: 35.12 },
+  { sym:"QCOM",  name:"Qualcomm Inc.",        sector:0, mktcap: 190, chg:+0.9,  price:168.77 },
+  { sym:"TXN",   name:"Texas Instruments",    sector:0, mktcap: 160, chg:-0.2,  price:172.55 },
+  { sym:"AMAT",  name:"Applied Materials",    sector:0, mktcap: 150, chg:+1.7,  price:174.33 },
+  { sym:"LRCX",  name:"Lam Research",         sector:0, mktcap: 110, chg:+2.3,  price:877.45 },
+  { sym:"MU",    name:"Micron Technology",    sector:0, mktcap:  98, chg:+1.8,  price: 88.67 },
+  { sym:"KLAC",  name:"KLA Corp.",            sector:0, mktcap:  95, chg:+0.7,  price:683.21 },
+  { sym:"ADI",   name:"Analog Devices",       sector:0, mktcap:  90, chg:-0.4,  price:186.44 },
+  { sym:"CSCO",  name:"Cisco Systems",        sector:0, mktcap: 210, chg:+0.3,  price: 52.18 },
+  { sym:"HPQ",   name:"HP Inc.",              sector:0, mktcap:  34, chg:-0.8,  price: 34.56 },
+  { sym:"IBM",   name:"IBM Corp.",            sector:0, mktcap: 145, chg:+0.5,  price:162.89 },
+  { sym:"PANW",  name:"Palo Alto Networks",   sector:0, mktcap: 108, chg:+1.9,  price:337.55 },
+  { sym:"SNPS",  name:"Synopsys Inc.",        sector:0, mktcap:  82, chg:+0.6,  price:536.77 },
+  // HC
+  { sym:"LLY",   name:"Eli Lilly & Co.",      sector:1, mktcap: 680, chg:+2.1,  price:727.89 },
+  { sym:"UNH",   name:"UnitedHealth Group",   sector:1, mktcap: 450, chg:+0.4,  price:481.23 },
+  { sym:"JNJ",   name:"Johnson & Johnson",    sector:1, mktcap: 380, chg:-0.2,  price:158.77 },
+  { sym:"ABBV",  name:"AbbVie Inc.",          sector:1, mktcap: 290, chg:+1.3,  price:162.44 },
+  { sym:"MRK",   name:"Merck & Co.",          sector:1, mktcap: 270, chg:+0.7,  price:108.33 },
+  { sym:"PFE",   name:"Pfizer Inc.",          sector:1, mktcap: 150, chg:-0.9,  price: 27.44 },
+  { sym:"TMO",   name:"Thermo Fisher Sci.",   sector:1, mktcap: 210, chg:+0.3,  price:537.88 },
+  { sym:"DHR",   name:"Danaher Corp.",        sector:1, mktcap: 180, chg:+0.8,  price:248.67 },
+  { sym:"ABT",   name:"Abbott Laboratories",  sector:1, mktcap: 190, chg:+1.1,  price:111.23 },
+  { sym:"ISRG",  name:"Intuitive Surgical",   sector:1, mktcap: 150, chg:+1.4,  price:395.67 },
+  { sym:"AMGN",  name:"Amgen Inc.",           sector:1, mktcap: 135, chg:-0.3,  price:271.44 },
+  { sym:"GILD",  name:"Gilead Sciences",      sector:1, mktcap:  88, chg:+0.6,  price: 70.33 },
+  { sym:"CVS",   name:"CVS Health Corp.",     sector:1, mktcap:  78, chg:-0.7,  price: 60.22 },
+  { sym:"SYK",   name:"Stryker Corp.",        sector:1, mktcap: 120, chg:+1.2,  price:310.45 },
+  { sym:"BDX",   name:"Becton Dickinson",     sector:1, mktcap:  68, chg:-0.4,  price:233.67 },
+  // FIN
+  { sym:"BRK.B", name:"Berkshire Hathaway B", sector:2, mktcap: 790, chg:+0.5,  price:367.89 },
+  { sym:"JPM",   name:"JPMorgan Chase",       sector:2, mktcap: 540, chg:+1.1,  price:186.34 },
+  { sym:"V",     name:"Visa Inc.",            sector:2, mktcap: 510, chg:+0.9,  price:254.66 },
+  { sym:"MA",    name:"Mastercard Inc.",      sector:2, mktcap: 430, chg:+1.0,  price:453.22 },
+  { sym:"BAC",   name:"Bank of America",      sector:2, mktcap: 290, chg:+0.8,  price: 36.78 },
+  { sym:"WFC",   name:"Wells Fargo & Co.",    sector:2, mktcap: 200, chg:+0.6,  price: 50.34 },
+  { sym:"GS",    name:"Goldman Sachs",        sector:2, mktcap: 130, chg:+1.4,  price:387.55 },
+  { sym:"MS",    name:"Morgan Stanley",       sector:2, mktcap: 145, chg:+0.7,  price: 83.44 },
+  { sym:"AXP",   name:"American Express",     sector:2, mktcap: 155, chg:+1.2,  price:207.89 },
+  { sym:"BLK",   name:"BlackRock Inc.",       sector:2, mktcap: 118, chg:+0.4,  price:767.33 },
+  { sym:"C",     name:"Citigroup Inc.",       sector:2, mktcap:  98, chg:+0.9,  price: 51.22 },
+  { sym:"SCHW",  name:"Charles Schwab",       sector:2, mktcap:  90, chg:+1.3,  price: 71.44 },
+  { sym:"USB",   name:"U.S. Bancorp",         sector:2, mktcap:  68, chg:-0.3,  price: 44.67 },
+  // CD
+  { sym:"AMZN",  name:"Amazon.com Inc.",      sector:3, mktcap:1820, chg:+1.5,  price:178.25 },
+  { sym:"TSLA",  name:"Tesla Inc.",           sector:3, mktcap: 620, chg:+2.8,  price:195.44 },
+  { sym:"HD",    name:"Home Depot Inc.",      sector:3, mktcap: 330, chg:+0.3,  price:335.67 },
+  { sym:"MCD",   name:"McDonald's Corp.",     sector:3, mktcap: 210, chg:+0.6,  price:284.33 },
+  { sym:"BKNG",  name:"Booking Holdings",    sector:3, mktcap: 130, chg:+1.1,  price:3455.78 },
+  { sym:"LOW",   name:"Lowe's Companies",    sector:3, mktcap: 140, chg:+0.4,  price:224.55 },
+  { sym:"NKE",   name:"Nike Inc.",           sector:3, mktcap: 130, chg:-0.7,  price: 89.33 },
+  { sym:"SBUX",  name:"Starbucks Corp.",     sector:3, mktcap: 100, chg:+0.2,  price: 90.44 },
+  { sym:"TGT",   name:"Target Corp.",        sector:3, mktcap:  72, chg:-0.5,  price:146.78 },
+  { sym:"ROST",  name:"Ross Stores Inc.",    sector:3, mktcap:  63, chg:+0.8,  price:141.22 },
+  { sym:"ORLY",  name:"O'Reilly Automotive", sector:3, mktcap:  65, chg:+1.0,  price:984.55 },
+  { sym:"CMG",   name:"Chipotle Mexican Gr.", sector:3, mktcap:  78, chg:+0.9,  price:2788.33 },
+  // IND
+  { sym:"RTX",   name:"RTX Corp.",            sector:4, mktcap: 140, chg:+0.8,  price: 96.44 },
+  { sym:"CAT",   name:"Caterpillar Inc.",     sector:4, mktcap: 140, chg:+1.1,  price:278.67 },
+  { sym:"UPS",   name:"United Parcel Svc.",   sector:4, mktcap: 110, chg:-0.4,  price:127.33 },
+  { sym:"HON",   name:"Honeywell Intl.",      sector:4, mktcap: 133, chg:+0.5,  price:193.44 },
+  { sym:"DE",    name:"Deere & Company",      sector:4, mktcap: 100, chg:+0.7,  price:344.55 },
+  { sym:"GE",    name:"GE Aerospace",         sector:4, mktcap: 178, chg:+2.1,  price:162.77 },
+  { sym:"ETN",   name:"Eaton Corp.",          sector:4, mktcap: 108, chg:+1.3,  price:266.44 },
+  { sym:"BA",    name:"Boeing Co.",           sector:4, mktcap: 108, chg:-1.2,  price:166.33 },
+  { sym:"LMT",   name:"Lockheed Martin",      sector:4, mktcap:  95, chg:+0.6,  price:362.89 },
+  { sym:"GD",    name:"General Dynamics",     sector:4, mktcap:  73, chg:+0.4,  price:256.44 },
+  { sym:"NOC",   name:"Northrop Grumman",     sector:4, mktcap:  70, chg:+0.5,  price:442.33 },
+  { sym:"WM",    name:"Waste Management",     sector:4, mktcap:  80, chg:+0.3,  price:200.66 },
+  { sym:"UBER",  name:"Uber Technologies",    sector:4, mktcap:  95, chg:+1.8,  price: 66.77 },
+  // COMM
+  { sym:"GOOGL", name:"Alphabet Inc. A",      sector:5, mktcap:2040, chg:+1.0,  price:162.55 },
+  { sym:"META",  name:"Meta Platforms",       sector:5, mktcap:1210, chg:+1.8,  price:473.22 },
+  { sym:"NFLX",  name:"Netflix Inc.",         sector:5, mktcap: 280, chg:+0.9,  price:634.77 },
+  { sym:"DIS",   name:"Walt Disney Co.",      sector:5, mktcap: 200, chg:-0.3,  price:109.44 },
+  { sym:"CMCSA", name:"Comcast Corp.",        sector:5, mktcap: 155, chg:-0.5,  price: 40.33 },
+  { sym:"TMUS",  name:"T-Mobile US",          sector:5, mktcap: 192, chg:+0.7,  price:163.88 },
+  { sym:"VZ",    name:"Verizon Comm.",        sector:5, mktcap: 165, chg:-0.2,  price: 39.55 },
+  { sym:"T",     name:"AT&T Inc.",            sector:5, mktcap: 142, chg:+0.1,  price: 20.33 },
+  { sym:"EA",    name:"Electronic Arts",      sector:5, mktcap:  38, chg:+0.4,  price:134.22 },
+  { sym:"TTD",   name:"The Trade Desk",       sector:5, mktcap:  44, chg:+2.3,  price:101.55 },
+  // CS
+  { sym:"WMT",   name:"Walmart Inc.",         sector:6, mktcap: 570, chg:+0.4,  price:68.44 },
+  { sym:"COST",  name:"Costco Wholesale",     sector:6, mktcap: 360, chg:+0.7,  price:817.33 },
+  { sym:"PG",    name:"Procter & Gamble",     sector:6, mktcap: 375, chg:+0.2,  price:156.55 },
+  { sym:"KO",    name:"Coca-Cola Co.",        sector:6, mktcap: 265, chg:+0.3,  price: 61.44 },
+  { sym:"PEP",   name:"PepsiCo Inc.",         sector:6, mktcap: 215, chg:-0.2,  price:156.77 },
+  { sym:"PM",    name:"Philip Morris Intl.",  sector:6, mktcap: 192, chg:+0.5,  price:124.33 },
+  { sym:"MDLZ",  name:"Mondelez Intl.",       sector:6, mktcap:  78, chg:-0.1,  price: 56.88 },
+  { sym:"CL",    name:"Colgate-Palmolive",    sector:6, mktcap:  65, chg:+0.2,  price: 78.44 },
+  { sym:"KMB",   name:"Kimberly-Clark",       sector:6, mktcap:  44, chg:+0.3,  price:130.55 },
+  // ENRG
+  { sym:"XOM",   name:"Exxon Mobil Corp.",    sector:7, mktcap: 480, chg:+0.9,  price:111.44 },
+  { sym:"CVX",   name:"Chevron Corp.",        sector:7, mktcap: 290, chg:+0.6,  price:155.33 },
+  { sym:"COP",   name:"ConocoPhillips",       sector:7, mktcap: 127, chg:+0.8,  price:112.77 },
+  { sym:"EOG",   name:"EOG Resources",        sector:7, mktcap:  70, chg:+0.7,  price:119.44 },
+  { sym:"SLB",   name:"SLB (Schlumberger)",   sector:7, mktcap:  64, chg:+1.2,  price: 44.66 },
+  { sym:"MPC",   name:"Marathon Petroleum",   sector:7, mktcap:  58, chg:+0.4,  price:171.33 },
+  { sym:"VLO",   name:"Valero Energy",        sector:7, mktcap:  45, chg:+0.5,  price:141.22 },
+  { sym:"PSX",   name:"Phillips 66",          sector:7, mktcap:  52, chg:+0.3,  price:120.44 },
+  { sym:"OXY",   name:"Occidental Petroleum", sector:7, mktcap:  50, chg:+1.0,  price: 56.33 },
+  // RE
+  { sym:"PLD",   name:"Prologis Inc.",        sector:8, mktcap: 120, chg:+0.4,  price:114.55 },
+  { sym:"AMT",   name:"American Tower",       sector:8, mktcap:  85, chg:+0.6,  price:183.44 },
+  { sym:"EQIX",  name:"Equinix Inc.",         sector:8, mktcap:  74, chg:+0.8,  price:792.33 },
+  { sym:"SPG",   name:"Simon Property Grp.",  sector:8, mktcap:  53, chg:-0.3,  price:153.77 },
+  { sym:"O",     name:"Realty Income Corp.",  sector:8, mktcap:  47, chg:+0.2,  price: 54.22 },
+  { sym:"WELL",  name:"Welltower Inc.",       sector:8, mktcap:  64, chg:+0.5,  price:100.44 },
+  { sym:"WY",    name:"Weyerhaeuser Co.",     sector:8, mktcap:  28, chg:-0.4,  price: 37.33 },
+  // MAT
+  { sym:"LIN",   name:"Linde plc",            sector:9, mktcap: 205, chg:+0.5,  price:424.88 },
+  { sym:"SHW",   name:"Sherwin-Williams",     sector:9, mktcap:  85, chg:+0.7,  price:322.44 },
+  { sym:"FCX",   name:"Freeport-McMoRan",     sector:9, mktcap:  60, chg:+1.5,  price: 41.33 },
+  { sym:"NEM",   name:"Newmont Corp.",        sector:9, mktcap:  48, chg:+2.1,  price: 41.77 },
+  { sym:"APD",   name:"Air Products & Chem.", sector:9, mktcap:  50, chg:+0.3,  price:227.44 },
+  { sym:"ECL",   name:"Ecolab Inc.",          sector:9, mktcap:  58, chg:+0.4,  price:204.33 },
+  { sym:"NUE",   name:"Nucor Corp.",          sector:9, mktcap:  32, chg:+0.6,  price:133.55 },
+  // UTIL
+  { sym:"NEE",   name:"NextEra Energy",       sector:10, mktcap: 140, chg:+0.3, price: 58.44 },
+  { sym:"SO",    name:"Southern Company",     sector:10, mktcap:  86, chg:+0.2, price: 78.33 },
+  { sym:"DUK",   name:"Duke Energy Corp.",    sector:10, mktcap:  85, chg:+0.1, price:104.77 },
+  { sym:"AEP",   name:"American Elec. Power", sector:10, mktcap:  54, chg:+0.2, price: 96.44 },
+  { sym:"D",     name:"Dominion Energy",      sector:10, mktcap:  44, chg:-0.1, price: 53.22 },
+  { sym:"XEL",   name:"Xcel Energy Inc.",     sector:10, mktcap:  34, chg:+0.3, price: 63.55 },
+  { sym:"PCG",   name:"PG&E Corp.",           sector:10, mktcap:  36, chg:+0.4, price: 19.33 },
+  { sym:"EXC",   name:"Exelon Corp.",         sector:10, mktcap:  42, chg:+0.2, price: 42.44 },
+];
+
+// ─── SCENE SETUP ────────────────────────────────────────────────────────────────
+const scene    = new THREE.Scene();
+const camera   = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 5000);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(devicePixelRatio);
+renderer.setSize(innerWidth, innerHeight);
+renderer.setClearColor(0x000005);
+document.body.appendChild(renderer.domElement);
+
+camera.position.set(0, 80, 280);
+camera.lookAt(0, 0, 0);
+
+// ─── LIGHTING ────────────────────────────────────────────────────────────────
+const ambient = new THREE.AmbientLight(0x112244, 0.8);
+scene.add(ambient);
+const sunLight = new THREE.PointLight(0xffffff, 2, 1000);
+sunLight.position.set(0, 0, 0);
+scene.add(sunLight);
+
+// ─── BACKGROUND STARS ────────────────────────────────────────────────────────
+function makeStarField(count, spread, size, color) {
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi   = Math.acos((Math.random() * 2) - 1);
+    const r     = spread * 0.5 + Math.random() * spread;
+    pos[i*3]   = r * Math.sin(phi) * Math.cos(theta);
+    pos[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+    pos[i*3+2] = r * Math.cos(phi);
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const mat = new THREE.PointsMaterial({ color, size, sizeAttenuation: true });
+  return new THREE.Points(geo, mat);
+}
+scene.add(makeStarField(8000, 2200, 1.2, 0xffffff));
+scene.add(makeStarField(3000, 1500, 0.8, 0xaaccff));
+scene.add(makeStarField(1500, 1800, 1.5, 0xffddaa));
+scene.add(makeStarField(800,  1200, 1.0, 0xaaffcc));
+
+// ─── NEBULA ────────────────────────────────────────────────────────────────
+function makeNebula(count, cx, cy, cz, spread, color) {
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    pos[i*3]   = cx + (Math.random()-0.5)*spread;
+    pos[i*3+1] = cy + (Math.random()-0.5)*spread*0.4;
+    pos[i*3+2] = cz + (Math.random()-0.5)*spread;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const mat = new THREE.PointsMaterial({
+    color, size: 2.5, sizeAttenuation: true,
+    transparent: true, opacity: 0.12
+  });
+  return new THREE.Points(geo, mat);
+}
+scene.add(makeNebula(2000, 400,  50, -200, 300, 0x0044ff));
+scene.add(makeNebula(2000, -500, -80, 100, 280, 0xff0066));
+scene.add(makeNebula(1500, 100,  -120, 300, 250, 0x6600ff));
+scene.add(makeNebula(1200, -300, 100,  -300, 200, 0x004488));
+
+// ─── CENTRAL SUN (S&P 500) ────────────────────────────────────────────────────
+const sunGeo = new THREE.SphereGeometry(12, 64, 64);
+const sunMat = new THREE.MeshBasicMaterial({ color: 0xffeedd });
+const sun    = new THREE.Mesh(sunGeo, sunMat);
+scene.add(sun);
+
+// Sun glow
+const glowGeo = new THREE.SphereGeometry(18, 32, 32);
+const glowMat = new THREE.MeshBasicMaterial({
+  color: 0xff8800, transparent: true, opacity: 0.08, side: THREE.BackSide
+});
+scene.add(new THREE.Mesh(glowGeo, glowMat));
+const glowGeo2 = new THREE.SphereGeometry(25, 32, 32);
+const glowMat2 = new THREE.MeshBasicMaterial({
+  color: 0xff6600, transparent: true, opacity: 0.04, side: THREE.BackSide
+});
+scene.add(new THREE.Mesh(glowGeo2, glowMat2));
+
+// Sun corona (ring)
+const coronaGeo = new THREE.RingGeometry(14, 28, 64);
+const coronaMat = new THREE.MeshBasicMaterial({
+  color: 0xffaa33, transparent: true, opacity: 0.06,
+  side: THREE.DoubleSide
+});
+const corona = new THREE.Mesh(coronaGeo, coronaMat);
+corona.rotation.x = Math.PI / 2;
+scene.add(corona);
+
+// ─── SECTOR PLANETS ───────────────────────────────────────────────────────────
+const ORBIT_RADII = [55, 72, 88, 104, 118, 132, 146, 158, 170, 181, 192];
+const sectorObjects = [];
+
+function hexToThree(hex) {
+  return new THREE.Color(hex);
+}
+
+SECTORS.forEach((sec, i) => {
+  const r   = ORBIT_RADII[i];
+  const ang = (i / SECTORS.length) * Math.PI * 2;
+
+  // Orbit ring
+  const orbitGeo = new THREE.RingGeometry(r - 0.3, r + 0.3, 128);
+  const orbitMat = new THREE.MeshBasicMaterial({
+    color: sec.color, transparent: true, opacity: 0.08,
+    side: THREE.DoubleSide
+  });
+  const orbitMesh = new THREE.Mesh(orbitGeo, orbitMat);
+  orbitMesh.rotation.x = Math.PI / 2;
+  scene.add(orbitMesh);
+
+  // Planet
+  const pSize = 3 + sec.weight * 0.18;
+  const pGeo  = new THREE.SphereGeometry(pSize, 32, 32);
+  const pMat  = new THREE.MeshPhongMaterial({
+    color: sec.color,
+    emissive: new THREE.Color(sec.color).multiplyScalar(0.25),
+    shininess: 80,
+    specular: 0x334466
+  });
+  const planet = new THREE.Mesh(pGeo, pMat);
+  planet.position.set(Math.cos(ang)*r, 0, Math.sin(ang)*r);
+  scene.add(planet);
+
+  // Planet glow
+  const pgGeo = new THREE.SphereGeometry(pSize * 1.6, 16, 16);
+  const pgMat = new THREE.MeshBasicMaterial({
+    color: sec.color, transparent: true, opacity: 0.07, side: THREE.BackSide
+  });
+  const pGlow = new THREE.Mesh(pgGeo, pgMat);
+  planet.add(pGlow);
+
+  // Atmosphere ring (for some sectors)
+  if (i % 3 === 0) {
+    const rGeo = new THREE.RingGeometry(pSize*1.4, pSize*1.8, 32);
+    const rMat = new THREE.MeshBasicMaterial({
+      color: sec.color, transparent: true, opacity: 0.2, side: THREE.DoubleSide
+    });
+    const ring = new THREE.Mesh(rGeo, rMat);
+    ring.rotation.x = 0.4;
+    planet.add(ring);
+  }
+
+  sectorObjects.push({
+    mesh: planet, sector: sec, index: i,
+    orbitRadius: r, angle: ang,
+    speed: 0.08 + i * 0.004,
+    stocks: []
+  });
+});
+
+// ─── STOCK STARS ──────────────────────────────────────────────────────────────
+const stockObjects = [];
+const raycaster    = new THREE.Raycaster();
+const mouse        = new THREE.Vector2(-9999, -9999);
+
+STOCKS_DATA.forEach((stock, idx) => {
+  const sec   = sectorObjects[stock.sector];
+  const col   = SECTORS[stock.sector].color;
+  const size  = 0.4 + Math.log(stock.mktcap) * 0.22;
+
+  const geo = new THREE.SphereGeometry(size, 12, 12);
+  const mat = new THREE.MeshPhongMaterial({
+    color: col,
+    emissive: new THREE.Color(col).multiplyScalar(0.5),
+    shininess: 120,
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+
+  // Orbit around sector
+  const subR   = 6 + Math.random() * 14;
+  const subAng = Math.random() * Math.PI * 2;
+  const subSpd = 0.2 + Math.random() * 0.5;
+  const tilt   = (Math.random() - 0.5) * 0.6;
+
+  mesh.position.set(
+    sec.mesh.position.x + Math.cos(subAng)*subR,
+    Math.sin(tilt)*subR*0.5,
+    sec.mesh.position.z + Math.sin(subAng)*subR
+  );
+  mesh.userData = { ...stock, isStock: true, sectorIdx: stock.sector, sectorName: SECTORS[stock.sector].name };
+  scene.add(mesh);
+
+  // Small star glow
+  const sgGeo = new THREE.SphereGeometry(size * 2.2, 8, 8);
+  const sgMat = new THREE.MeshBasicMaterial({
+    color: col, transparent: true, opacity: 0.12, side: THREE.BackSide
+  });
+  mesh.add(new THREE.Mesh(sgGeo, sgMat));
+
+  stockObjects.push({ mesh, stock, subR, subAng, subSpd, tilt, sectorIdx: stock.sector });
+  sec.stocks.push(stockObjects[stockObjects.length - 1]);
+});
+
+// ─── ORBIT LABELS (CSS2D alternative using sprites) ───────────────────────────
+const labelCanvas = document.createElement('canvas');
+labelCanvas.width  = 256; labelCanvas.height = 64;
+const ctx = labelCanvas.getContext('2d');
+ctx.fillStyle = 'rgba(0,0,0,0)';
+
+// ─── SECTOR LEGEND ────────────────────────────────────────────────────────────
+const legend = document.getElementById('sector-legend');
+SECTORS.forEach((sec, i) => {
+  const div = document.createElement('div');
+  div.className = 'sector-item';
+  const chg = (Math.random() * 4 - 1).toFixed(2);
+  const chgColor = chg >= 0 ? '#00ffaa' : '#ff4466';
+  div.innerHTML = `
+    <div class="sector-dot" style="background:#${sec.color.toString(16).padStart(6,'0')}; color:#${sec.color.toString(16).padStart(6,'0')}"></div>
+    <div class="sector-name">${sec.abbr}</div>
+    <div class="sector-pct" style="color:${chgColor}">${chg >= 0 ? '+' : ''}${chg}%</div>
+  `;
+  div.onclick = () => focusSector(i);
+  legend.appendChild(div);
+});
+
+// ─── INTERACTION ──────────────────────────────────────────────────────────────
+let isDragging = false, lastX = 0, lastY = 0;
+let rotX = 0.2, rotY = 0;
+let targetRotX = 0.2, targetRotY = 0;
+let camDist = 280, targetDist = 280;
+let currentView = 'orbit';
+let hoveredObj = null;
+
+const cameraGroup = new THREE.Group();
+scene.add(cameraGroup);
+
+renderer.domElement.addEventListener('mousedown', e => {
+  isDragging = true; lastX = e.clientX; lastY = e.clientY;
+});
+renderer.domElement.addEventListener('mouseup',   () => isDragging = false);
+renderer.domElement.addEventListener('mouseleave',() => isDragging = false);
+renderer.domElement.addEventListener('mousemove', e => {
+  if (isDragging) {
+    targetRotY += (e.clientX - lastX) * 0.004;
+    targetRotX += (e.clientY - lastY) * 0.003;
+    targetRotX = Math.max(-0.9, Math.min(0.9, targetRotX));
+    lastX = e.clientX; lastY = e.clientY;
+  }
+  mouse.x = (e.clientX / innerWidth)  *  2 - 1;
+  mouse.y = (e.clientY / innerHeight) * -2 + 1;
+  updateTooltipPos(e.clientX, e.clientY);
+});
+renderer.domElement.addEventListener('wheel', e => {
+  targetDist += e.deltaY * 0.3;
+  targetDist = Math.max(40, Math.min(600, targetDist));
+});
+renderer.domElement.addEventListener('click', e => {
+  if (hoveredObj) clickObject(hoveredObj);
+});
+
+// Touch support
+renderer.domElement.addEventListener('touchstart', e => {
+  isDragging = true;
+  lastX = e.touches[0].clientX;
+  lastY = e.touches[0].clientY;
+});
+renderer.domElement.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (isDragging) {
+    targetRotY += (e.touches[0].clientX - lastX) * 0.004;
+    targetRotX += (e.touches[0].clientY - lastY) * 0.003;
+    targetRotX = Math.max(-0.9, Math.min(0.9, targetRotX));
+    lastX = e.touches[0].clientX;
+    lastY = e.touches[0].clientY;
+  }
+}, { passive: false });
+renderer.domElement.addEventListener('touchend', () => isDragging = false);
+
+function setView(v) {
+  currentView = v;
+  document.querySelectorAll('.ctrl-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + v).classList.add('active');
+  if (v === 'galaxy') { targetDist = 500; targetRotX = 0.8; }
+  else if (v === 'sector') { targetDist = 180; }
+  else { targetDist = 280; targetRotX = 0.2; }
+}
+function resetCamera() {
+  targetDist = 280; targetRotX = 0.2; targetRotY = 0;
+  currentView = 'orbit';
+  document.querySelectorAll('.ctrl-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-orbit').classList.add('active');
+}
+function focusSector(i) {
+  const sec = sectorObjects[i];
+  targetDist = 120;
+  targetRotY = -sec.angle;
+  targetRotX = 0.15;
+}
+
+let clickedStock = null;
+function clickObject(obj) {
+  if (obj.userData.isStock) {
+    clickedStock = obj;
+    // pulse animation on click
+    obj.scale.set(2, 2, 2);
+    setTimeout(() => obj.scale.set(1, 1, 1), 300);
+  }
+}
+
+const tooltip = document.getElementById('tooltip');
+function updateTooltipPos(cx, cy) {
+  if (tooltip.style.display === 'block') {
+    let tx = cx + 16, ty = cy - 10;
+    if (tx + 240 > innerWidth)  tx = cx - 256;
+    if (ty + 200 > innerHeight) ty = cy - 180;
+    tooltip.style.left = tx + 'px';
+    tooltip.style.top  = ty + 'px';
+  }
+}
+function showTooltip(stock, cx, cy) {
+  const chgCol = stock.chg >= 0 ? 'tt-change-pos' : 'tt-change-neg';
+  const sign   = stock.chg >= 0 ? '+' : '';
+  const col    = SECTORS[stock.sectorIdx].color;
+  const hex    = '#' + col.toString(16).padStart(6,'0');
+  tooltip.innerHTML = `
+    <div class="tt-name">${stock.sym}</div>
+    <div class="tt-sector" style="color:${hex}">${stock.sectorName}</div>
+    <div class="tt-divider"></div>
+    <div class="tt-row"><span>Price</span><span>$${stock.price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</span></div>
+    <div class="tt-row"><span>Change</span><span class="${chgCol}">${sign}${stock.chg}%</span></div>
+    <div class="tt-row"><span>Mkt Cap</span><span>$${stock.mktcap}B</span></div>
+    <div class="tt-row"><span>Company</span><span style="font-size:10px">${stock.name}</span></div>
+  `;
+  tooltip.style.display = 'block';
+  updateTooltipPos(cx, cy);
+}
+function hideTooltip() {
+  tooltip.style.display = 'none';
+}
+
+// ─── LABEL SPRITES ───────────────────────────────────────────────────────────
+function makeLabel(text, color) {
+  const c   = document.createElement('canvas');
+  c.width   = 256; c.height = 48;
+  const x   = c.getContext('2d');
+  x.fillStyle = 'rgba(0,0,0,0)';
+  x.fillRect(0, 0, 256, 48);
+  x.font      = 'bold 22px Courier New';
+  x.fillStyle = color;
+  x.textAlign = 'center';
+  x.shadowColor = color;
+  x.shadowBlur  = 8;
+  x.fillText(text, 128, 30);
+  const tex  = new THREE.CanvasTexture(c);
+  const mat  = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+  const spr  = new THREE.Sprite(mat);
+  spr.scale.set(20, 6, 1);
+  return spr;
+}
+
+sectorObjects.forEach((sec, i) => {
+  const hex   = '#' + SECTORS[i].color.toString(16).padStart(6,'0');
+  const label = makeLabel(SECTORS[i].abbr, hex);
+  label.position.set(0, 5 + 3, 0);
+  sec.mesh.add(label);
+});
+
+// ─── ANIMATION ────────────────────────────────────────────────────────────────
+const clock = new THREE.Clock();
+let lastHover = null;
+
+function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+
+  // Smooth camera
+  rotX   += (targetRotX - rotX)   * 0.06;
+  rotY   += (targetRotY - rotY)   * 0.06;
+  camDist += (targetDist - camDist) * 0.06;
+
+  camera.position.x = camDist * Math.sin(rotY) * Math.cos(rotX);
+  camera.position.y = camDist * Math.sin(rotX);
+  camera.position.z = camDist * Math.cos(rotY) * Math.cos(rotX);
+  camera.lookAt(0, 0, 0);
+
+  // Rotate sun
+  sun.rotation.y = t * 0.1;
+  corona.rotation.z = t * 0.05;
+
+  // Animate sector planets
+  sectorObjects.forEach((sec, i) => {
+    const spd  = sec.speed * 0.15;
+    sec.angle += spd * 0.008;
+    const r    = sec.orbitRadius;
+    sec.mesh.position.x = Math.cos(sec.angle) * r;
+    sec.mesh.position.z = Math.sin(sec.angle) * r;
+    sec.mesh.rotation.y = t * 0.3;
+  });
+
+  // Animate stock stars around their sector
+  stockObjects.forEach(obj => {
+    obj.subAng += obj.subSpd * 0.005;
+    const sec   = sectorObjects[obj.sectorIdx];
+    const px    = sec.mesh.position.x;
+    const pz    = sec.mesh.position.z;
+    obj.mesh.position.x = px + Math.cos(obj.subAng) * obj.subR;
+    obj.mesh.position.z = pz + Math.sin(obj.subAng) * obj.subR;
+    obj.mesh.position.y = Math.sin(obj.subAng * 0.7 + obj.tilt) * obj.subR * 0.3;
+    obj.mesh.rotation.y = t;
+  });
+
+  // Raycast hover
+  raycaster.setFromCamera(mouse, camera);
+  const allMeshes = stockObjects.map(s => s.mesh);
+  const hits      = raycaster.intersectObjects(allMeshes);
+
+  if (hits.length > 0) {
+    const obj = hits[0].object;
+    if (obj !== lastHover) {
+      if (lastHover) { lastHover.scale.set(1,1,1); }
+      obj.scale.set(2.2, 2.2, 2.2);
+      lastHover = obj;
+      renderer.domElement.style.cursor = 'pointer';
+    }
+    hoveredObj = obj;
+    const sd   = obj.userData;
+    const rect = renderer.domElement.getBoundingClientRect();
+    const cx   = (mouse.x * 0.5 + 0.5) * innerWidth;
+    const cy   = (-(mouse.y - 1) * 0.5) * innerHeight;
+    showTooltip(sd, cx, cy);
+  } else {
+    if (lastHover) {
+      lastHover.scale.set(1,1,1);
+      lastHover = null;
+      renderer.domElement.style.cursor = 'default';
+    }
+    hoveredObj = null;
+    hideTooltip();
+  }
+
+  // Pulse sun light
+  sunLight.intensity = 1.8 + Math.sin(t * 0.8) * 0.3;
+
+  renderer.render(scene, camera);
+}
+
+// ─── RESPONSIVE ───────────────────────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+// ─── LOADING SEQUENCE ─────────────────────────────────────────────────────────
+const bar      = document.getElementById('loading-bar');
+const statTxt  = document.getElementById('loading-status');
+const msgs = [
+  'Mapping star systems...', 'Loading sector galaxies...',
+  'Placing stock stars...', 'Calculating orbits...',
+  'Calibrating photon drives...', 'Launch ready!'
+];
+let p = 0;
+const loadInt = setInterval(() => {
+  p += 4 + Math.random() * 8;
+  if (p > 100) p = 100;
+  bar.style.width = p + '%';
+  statTxt.textContent = msgs[Math.min(Math.floor(p/18), msgs.length-1)];
+  if (p >= 100) {
+    clearInterval(loadInt);
+    setTimeout(() => {
+      const ld = document.getElementById('loading');
+      ld.style.opacity = '0';
+      setTimeout(() => ld.remove(), 1000);
+      animate();
+    }, 400);
+  }
+}, 60);
+
+// Live ticker update
+setInterval(() => {
+  const base   = 4783.45;
+  const change = (Math.random() - 0.48) * 2;
+  const val    = base + change;
+  const pct    = (change / base * 100).toFixed(2);
+  document.getElementById('spx-val').textContent = val.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  const chgEl  = document.getElementById('spx-chg');
+  chgEl.textContent = (change >= 0 ? '+' : '') + pct + '%';
+  chgEl.style.color  = change >= 0 ? '#00ffcc' : '#ff4466';
+}, 3000);
+</script>
+</body>
+</html>
