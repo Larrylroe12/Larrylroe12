@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Credit Blueprint — Build Personal & Business Credit the Right Way</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --blue-900: #0a1628;
+  --blue-800: #0f2140;
+  --blue-700: #143366;
+  --blue-600: #1a4a8a;
+  --blue-500: #2563eb;
+  --blue-400: #3b82f6;
+  --blue-300: #60a5fa;
+  --blue-200: #93c5fd;
+  --blue-100: #dbeafe;
+  --blue-50: #eff6ff;
+  --white: #ffffff;
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #64748b;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gold: #f59e0b;
+  --green: #10b981;
+  --green-light: #d1fae5;
+  --red: #ef4444;
+  --red-light: #fee2e2;
+  --yellow: #eab308;
+  --yellow-light: #fef9c3;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --shadow-sm: 0 1px 3px rgba(10,22,40,0.06);
+  --shadow-md: 0 4px 20px rgba(10,22,40,0.08);
+  --shadow-lg: 0 8px 40px rgba(10,22,40,0.12);
+  --shadow-xl: 0 20px 60px rgba(10,22,40,0.16);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  color: var(--gray-700);
+  background: var(--white);
+  line-height: 1.7;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+
+/* ─── Utilities ─── */
+.text-center { text-align: center; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.btn-full { width: 100%; justify-content: center; }
+.text-white { color: white !important; }
+.text-red { color: var(--red); }
+.text-green { color: var(--green); }
+.bg-red { background: var(--red); }
+.bg-green { background: var(--green); }
+.footer-socials { display: flex; gap: 20px; }
+.footer-social-link { color: inherit; text-decoration: none; }
+.funding-meter-text { font-size: 13px; font-weight: 600; }
+.calc-disclaimer { margin-top: 24px; font-size: 14px; opacity: 0.8; }
+
+/* ─── Utility ─── */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 100px 0; position: relative; }
+.section-label {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--blue-400);
+  margin-bottom: 14px;
+  display: inline-block;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 700;
+  color: var(--blue-900);
+  line-height: 1.2;
+  margin-bottom: 18px;
+}
+.section-subtitle {
+  font-size: 17px;
+  color: var(--gray-500);
+  max-width: 600px;
+  line-height: 1.75;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 32px;
+  border-radius: 60px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+  overflow: hidden;
+}
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+.btn:hover::after { opacity: 1; }
+.btn-primary {
+  background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+  color: white;
+  box-shadow: 0 4px 20px rgba(37,99,235,0.35);
+}
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(37,99,235,0.45);
+}
+.btn-primary::after { background: linear-gradient(135deg, var(--blue-400), var(--blue-500)); }
+.btn-outline {
+  background: white;
+  color: var(--blue-600);
+  border: 2px solid var(--blue-200);
+}
+.btn-outline:hover {
+  background: var(--blue-50);
+  border-color: var(--blue-400);
+  transform: translateY(-2px);
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 4px 20px rgba(37,99,235,0.35); }
+  50% { box-shadow: 0 4px 30px rgba(37,99,235,0.55); }
+}
+.btn-primary:hover { animation: pulse-glow 1.5s infinite; }
+
+/* ─── Animations ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.animate-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Navbar ─── */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 16px 0;
+  transition: all 0.4s;
+  background: rgba(255,255,255,0);
+}
+.navbar.scrolled {
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 1px 20px rgba(10,22,40,0.06);
+  padding: 10px 0;
+}
+.navbar .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--blue-900);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--blue-500), var(--blue-700));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 18px;
+  font-weight: 800;
+}
+.nav-cta {
+  padding: 10px 24px;
+  font-size: 14px;
+}
+
+/* ─── Hero ─── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(165deg, var(--white) 0%, var(--blue-50) 50%, var(--blue-100) 100%);
+  padding-top: 100px;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -20%;
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(37,99,235,0.07) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: float 8s ease-in-out infinite;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: float 10s ease-in-out infinite reverse;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+.hero-content { animation: fadeUp 1s ease-out; }
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid var(--blue-100);
+  border-radius: 50px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue-600);
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
+}
+.hero-badge-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse-glow 2s infinite;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 6vw, 60px);
+  font-weight: 800;
+  color: var(--blue-900);
+  line-height: 1.1;
+  margin-bottom: 22px;
+}
+.hero h1 span {
+  background: linear-gradient(135deg, var(--blue-500), var(--blue-300));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero p {
+  font-size: 18px;
+  color: var(--gray-500);
+  line-height: 1.8;
+  margin-bottom: 36px;
+  max-width: 500px;
+}
+.hero-buttons { display: flex; gap: 16px; flex-wrap: wrap; }
+.hero-visual {
+  position: relative;
+  animation: fadeIn 1.2s ease-out 0.3s both;
+}
+.score-card {
+  background: white;
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: var(--shadow-xl);
+  position: relative;
+  overflow: hidden;
+}
+.score-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--blue-400), var(--blue-600), var(--blue-400));
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+.score-display {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.score-number {
+  font-family: var(--font-display);
+  font-size: 72px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--blue-500), var(--blue-700));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+.score-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 4px;
+}
+.score-bar-container {
+  background: var(--gray-100);
+  border-radius: 12px;
+  height: 14px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+.score-bar {
+  height: 100%;
+  border-radius: 12px;
+  background: linear-gradient(90deg, var(--red), var(--yellow), var(--green));
+  width: 0%;
+  transition: width 2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.score-bar.animate { width: 82%; }
+.score-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--gray-400);
+  font-weight: 500;
+}
+.floating-badge {
+  position: absolute;
+  background: white;
+  border-radius: 14px;
+  padding: 14px 20px;
+  box-shadow: var(--shadow-lg);
+  font-size: 14px;
+  font-weight: 600;
+  animation: float 5s ease-in-out infinite;
+  white-space: nowrap;
+}
+.floating-badge.top-right {
+  top: -20px;
+  right: -30px;
+  color: var(--green);
+  animation-delay: 0.5s;
+}
+.floating-badge.bottom-left {
+  bottom: -15px;
+  left: -25px;
+  color: var(--blue-500);
+  animation-delay: 1s;
+}
+
+/* ─── Cards Grid ─── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 48px;
+}
+.feature-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 32px;
+  border: 1px solid var(--gray-100);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 3px;
+  background: linear-gradient(90deg, var(--blue-400), var(--blue-600));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s;
+}
+.feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--blue-100);
+}
+.feature-card:hover::before { transform: scaleX(1); }
+.card-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+  background: var(--blue-50);
+}
+.feature-card h3 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--blue-900);
+  margin-bottom: 10px;
+}
+.feature-card p {
+  font-size: 15px;
+  color: var(--gray-500);
+  line-height: 1.7;
+}
+
+/* ─── FICO Simulator ─── */
+.simulator-section { background: var(--gray-50); }
+.simulator-card {
+  background: white;
+  border-radius: 24px;
+  padding: 48px;
+  box-shadow: var(--shadow-lg);
+  max-width: 800px;
+  margin: 48px auto 0;
+}
+.sim-row {
+  margin-bottom: 32px;
+}
+.sim-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.sim-label span:first-child {
+  font-weight: 600;
+  color: var(--blue-900);
+  font-size: 15px;
+}
+.sim-label span:last-child {
+  font-weight: 700;
+  color: var(--blue-500);
+  font-size: 15px;
+}
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--gray-200);
+  outline: none;
+  transition: background 0.3s;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-400), var(--blue-600));
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(37,99,235,0.4);
+  transition: transform 0.2s;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+input[type="range"]::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-400), var(--blue-600));
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 10px rgba(37,99,235,0.4);
+}
+.sim-result {
+  text-align: center;
+  padding: 36px;
+  background: linear-gradient(135deg, var(--blue-50), var(--blue-100));
+  border-radius: var(--radius);
+  margin-top: 20px;
+}
+.sim-score {
+  font-family: var(--font-display);
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 8px;
+  transition: color 0.5s;
+}
+.sim-range {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-500);
+  margin-bottom: 14px;
+}
+.approval-meter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* ─── Calculator ─── */
+.calc-section { background: white; }
+.calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+  max-width: 900px;
+  margin: 48px auto 0;
+}
+.calc-inputs { display: flex; flex-direction: column; gap: 20px; }
+.calc-field label {
+  display: block;
+  font-weight: 600;
+  color: var(--blue-900);
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.calc-field input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--blue-900);
+  transition: all 0.3s;
+  outline: none;
+}
+.calc-field input:focus {
+  border-color: var(--blue-400);
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
+}
+.calc-output {
+  background: linear-gradient(160deg, var(--blue-800), var(--blue-900));
+  border-radius: 24px;
+  padding: 40px;
+  color: white;
+  text-align: center;
+  position: sticky;
+  top: 100px;
+}
+.calc-score-display {
+  font-family: var(--font-display);
+  font-size: 72px;
+  font-weight: 800;
+  line-height: 1;
+  margin: 20px 0 8px;
+}
+.calc-score-range {
+  font-size: 15px;
+  opacity: 0.7;
+  margin-bottom: 24px;
+}
+.approval-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 15px;
+}
+.approval-high { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+.approval-mid { background: rgba(234,179,8,0.2); color: #fde047; }
+.approval-low { background: rgba(239,68,68,0.2); color: #fca5a5; }
+
+/* ─── Business Flow ─── */
+.biz-section { background: var(--gray-50); }
+.flow-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 48px;
+  position: relative;
+}
+.flow-step {
+  text-align: center;
+  padding: 32px 20px;
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-100);
+  transition: all 0.4s;
+  position: relative;
+}
+.flow-step:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--blue-200);
+}
+.flow-step-num {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+  color: white;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+.flow-step-icon { font-size: 28px; margin-bottom: 12px; }
+.flow-step h4 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--blue-900);
+  margin-bottom: 8px;
+}
+.flow-step p {
+  font-size: 13px;
+  color: var(--gray-500);
+  line-height: 1.6;
+}
+
+/* ─── Score Gauge ─── */
+.gauge-container {
+  text-align: center;
+  margin: 48px auto 0;
+  max-width: 700px;
+}
+.gauge-wrapper {
+  position: relative;
+  width: 280px;
+  height: 160px;
+  margin: 0 auto 32px;
+}
+.gauge-svg { width: 280px; height: 160px; }
+.gauge-score {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--blue-900);
+}
+.gauge-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+.paydex-examples {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 32px;
+}
+.paydex-card {
+  padding: 24px;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  border: 1px solid var(--gray-100);
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.paydex-card:hover {
+  transform: scale(1.03);
+  box-shadow: var(--shadow-md);
+}
+.paydex-card.active { border-color: var(--blue-400); background: var(--blue-50); }
+.paydex-score {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.paydex-desc {
+  font-size: 13px;
+  color: var(--gray-500);
+}
+
+/* ─── Intelliscore ─── */
+.intelli-section { background: white; }
+.intelli-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 48px;
+}
+.profile-card {
+  background: var(--gray-50);
+  border-radius: var(--radius);
+  padding: 32px;
+  border: 2px solid var(--gray-100);
+  transition: all 0.4s;
+}
+.profile-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.profile-card.strong { border-color: var(--green); background: #f0fdf4; }
+.profile-card.weak { border-color: var(--red); background: #fef2f2; }
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.profile-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.profile-card.weak .profile-icon { background: var(--red-light); }
+.profile-card.strong .profile-icon { background: var(--green-light); }
+.profile-header h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--blue-900);
+}
+.profile-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  font-size: 14px;
+}
+.profile-stat:last-child { border-bottom: none; }
+.profile-stat span:first-child { color: var(--gray-500); }
+.profile-stat span:last-child { font-weight: 700; color: var(--blue-900); }
+.funding-meter {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+.funding-meter-bar {
+  height: 10px;
+  border-radius: 5px;
+  background: var(--gray-200);
+  overflow: hidden;
+  margin-top: 8px;
+}
+.funding-meter-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─── Case Studies ─── */
+.cases-section { background: var(--gray-50); }
+.cases-scroll {
+  display: flex;
+  gap: 24px;
+  margin-top: 48px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 16px;
+  scrollbar-width: none;
+}
+.cases-scroll::-webkit-scrollbar { display: none; }
+.case-card {
+  min-width: 360px;
+  max-width: 400px;
+  background: white;
+  border-radius: var(--radius);
+  padding: 36px;
+  scroll-snap-align: start;
+  flex-shrink: 0;
+  border: 1px solid var(--gray-100);
+  transition: all 0.4s;
+}
+.case-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+.case-type {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.case-type.personal { background: var(--blue-50); color: var(--blue-600); }
+.case-type.business { background: #f0fdf4; color: var(--green); }
+.case-card h4 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--blue-900);
+  margin-bottom: 16px;
+}
+.timeline { display: flex; flex-direction: column; gap: 12px; }
+.timeline-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.timeline-marker {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--blue-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--blue-500);
+  flex-shrink: 0;
+}
+.timeline-content h5 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--blue-900);
+  margin-bottom: 2px;
+}
+.timeline-content p {
+  font-size: 13px;
+  color: var(--gray-500);
+  line-height: 1.5;
+}
+
+/* ─── Pricing ─── */
+.pricing-section { background: white; }
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 32px;
+  margin-top: 48px;
+}
+.pricing-card {
+  background: white;
+  border-radius: 24px;
+  padding: 48px 32px;
+  border: 1px solid var(--gray-100);
+  text-align: center;
+  transition: all 0.4s;
+  position: relative;
+}
+.pricing-card.popular {
+  border-color: var(--blue-200);
+  box-shadow: var(--shadow-lg);
+  transform: scale(1.05);
+  z-index: 1;
+}
+.popular-badge {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--blue-500);
+  color: white;
+  padding: 6px 18px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.pricing-card h3 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  color: var(--blue-900);
+  margin-bottom: 12px;
+}
+.price {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--blue-900);
+  margin-bottom: 24px;
+}
+.price span { font-size: 18px; color: var(--gray-400); font-weight: 400; }
+.pricing-features {
+  list-style: none;
+  margin: 32px 0;
+  text-align: left;
+}
+.pricing-features li {
+  padding: 10px 0;
+  font-size: 15px;
+  color: var(--gray-600);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.pricing-features li::before {
+  content: '✓';
+  color: var(--green);
+  font-weight: 800;
+}
+
+/* ─── Footer ─── */
+.footer {
+  background: var(--blue-900);
+  color: white;
+  padding: 80px 0 40px;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: 60px;
+  margin-bottom: 60px;
+}
+.footer-brand p {
+  margin-top: 20px;
+  color: var(--gray-400);
+  font-size: 15px;
+  max-width: 300px;
+}
+.footer-links h4 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  margin-bottom: 24px;
+}
+.footer-links ul { list-style: none; }
+.footer-links li { margin-bottom: 12px; }
+.footer-links a {
+  color: var(--gray-400);
+  text-decoration: none;
+  transition: color 0.3s;
+  font-size: 14px;
+}
+.footer-links a:hover { color: white; }
+.footer-bottom {
+  padding-top: 40px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--gray-500);
+  font-size: 13px;
+}
+
+@media (max-width: 968px) {
+  .hero-grid, .calc-grid, .intelli-grid, .footer-grid { grid-template-columns: 1fr; }
+  .hero { text-align: center; padding-top: 140px; }
+  .hero p { margin: 0 auto 36px; }
+  .hero-buttons { justify-content: center; }
+  .pricing-card.popular { transform: scale(1); }
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <div class="container">
+    <a href="#" class="logo">
+      <div class="logo-icon">B</div>
+      <span>Credit Blueprint</span>
+    </a>
+    <a href="#pricing" class="btn btn-primary nav-cta">Get Started</a>
+  </div>
+</nav>
+
+<main>
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <div class="hero-badge-dot"></div>
+          Trusted by 5,000+ Entrepreneurs
+        </div>
+        <h1>Master Your <span>Financial Future</span> with the Blueprint</h1>
+        <p>Build, optimize, and leverage your personal and business credit to unlock six-figure funding and financial freedom.</p>
+        <div class="hero-buttons">
+          <a href="#simulator" class="btn btn-primary">Try Score Simulator</a>
+          <a href="#pricing" class="btn btn-outline">View Plans</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="score-card">
+          <div class="score-display">
+            <div class="score-number" id="hero-score">785</div>
+            <div class="score-label">Excellent Credit Score</div>
+          </div>
+          <div class="score-bar-container">
+            <div class="score-bar" id="hero-score-bar"></div>
+          </div>
+          <div class="score-meta">
+            <span>300</span>
+            <span>850</span>
+          </div>
+          <div class="floating-badge top-right">+42 Points This Month</div>
+          <div class="floating-badge bottom-left">Funding Approved</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <div class="container">
+    <div class="animate-on-scroll">
+      <span class="section-label">Why Us</span>
+      <h2 class="section-title">The Complete Credit Ecosystem</h2>
+      <p class="section-subtitle">Everything you need to go from zero to bankable, all in one place.</p>
+    </div>
+    <div class="cards-grid">
+      <div class="feature-card animate-on-scroll">
+        <div class="card-icon" aria-hidden="true">📈</div>
+        <h3>FICO Optimization</h3>
+        <p>Advanced strategies to remove negatives and boost your score by 50-100+ points rapidly.</p>
+      </div>
+      <div class="feature-card animate-on-scroll">
+        <div class="card-icon" aria-hidden="true">🏢</div>
+        <h3>Business Credit</h3>
+        <p>Step-by-step guide to building a strong business profile without using your personal SSN.</p>
+      </div>
+      <div class="feature-card animate-on-scroll">
+        <div class="card-icon" aria-hidden="true">💰</div>
+        <h3>Funding Access</h3>
+        <p>Direct connections to lenders and strategies to secure $50k-$250k in business credit lines.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section simulator-section" id="simulator">
+  <div class="container">
+    <div class="text-center">
+      <span class="section-label">Interactive Tool</span>
+      <h2 class="section-title">FICO Impact Simulator</h2>
+      <p class="section-subtitle mx-auto">See how different financial decisions affect your score instantly.</p>
+    </div>
+    <div class="simulator-card animate-on-scroll">
+      <div class="sim-row">
+        <label class="sim-label" for="sim-util">
+          <span>Credit Card Utilization</span>
+          <span id="util-val">15%</span>
+        </label>
+        <input type="range" id="sim-util" min="0" max="100" value="15">
+      </div>
+      <div class="sim-row">
+        <label class="sim-label" for="sim-missed">
+          <span>Payment History (Missed Payments)</span>
+          <span id="missed-val">0</span>
+        </label>
+        <input type="range" id="sim-missed" min="0" max="5" value="0">
+      </div>
+      <div class="sim-row">
+        <label class="sim-label" for="sim-age">
+          <span>Credit Age (Years)</span>
+          <span id="age-val">5 Years</span>
+        </label>
+        <input type="range" id="sim-age" min="1" max="20" value="5">
+      </div>
+      <div class="sim-result">
+        <div class="sim-range">Estimated FICO® Score 8</div>
+        <div class="sim-score" id="sim-score">745</div>
+        <div class="approval-meter" id="sim-meter">Excellent</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section calc-section" id="calculator">
+  <div class="container">
+    <div class="text-center">
+      <span class="section-label">Funding Tool</span>
+      <h2 class="section-title">Business Funding Calculator</h2>
+    </div>
+    <div class="calc-grid">
+      <div class="calc-inputs animate-on-scroll">
+        <div class="calc-field">
+          <label for="calc-rev">Monthly Revenue ($)</label>
+          <input type="number" id="calc-rev" value="15000">
+        </div>
+        <div class="calc-field">
+          <label for="calc-time">Time in Business (Months)</label>
+          <input type="number" id="calc-time" value="24">
+        </div>
+        <div class="calc-field">
+          <label for="calc-credit">Personal Credit Score</label>
+          <input type="number" id="calc-credit" value="720">
+        </div>
+        <div class="calc-field">
+          <label for="calc-debt">Monthly Debt Payments ($)</label>
+          <input type="number" id="calc-debt" value="2000">
+        </div>
+      </div>
+      <div class="calc-output animate-on-scroll">
+        <div class="calc-score-range">Estimated Funding Capability</div>
+        <div class="calc-score-display" id="fund-total">$45,000</div>
+        <div class="approval-badge approval-high" id="fund-status">High Approval Odds</div>
+        <p class="calc-disclaimer">Based on 0% Interest Business Credit Card stacking and Term Loan availability.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section biz-section" id="process">
+  <div class="container">
+    <div class="text-center">
+      <span class="section-label">The Strategy</span>
+      <h2 class="section-title">The 4-Step Scaling Process</h2>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step animate-on-scroll">
+        <div class="flow-step-num">1</div>
+        <div class="flow-step-icon" aria-hidden="true">🧼</div>
+        <h4>Sanitize Profile</h4>
+        <p>Remove errors and optimization of personal credit base.</p>
+      </div>
+      <div class="flow-step animate-on-scroll">
+        <div class="flow-step-num">2</div>
+        <div class="flow-step-icon" aria-hidden="true">📋</div>
+        <h4>LLC Setup</h4>
+        <p>Structure your business to meet bank compliance standards.</p>
+      </div>
+      <div class="flow-step animate-on-scroll">
+        <div class="flow-step-num">3</div>
+        <div class="flow-step-icon" aria-hidden="true">📈</div>
+        <h4>Build Tier 1-3</h4>
+        <p>Establish vendor lines and store credit to generate Paydex.</p>
+      </div>
+      <div class="flow-step animate-on-scroll">
+        <div class="flow-step-num">4</div>
+        <div class="flow-step-icon" aria-hidden="true">🔓</div>
+        <h4>Unsecured Funding</h4>
+        <p>Apply for high-limit business cards and lines of credit.</p>
+      </div>
+    </div>
+
+    <div class="gauge-container animate-on-scroll">
+      <div class="gauge-wrapper">
+        <svg class="gauge-svg" viewBox="0 0 200 120" aria-hidden="true">
+          <path d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#e2e8f0" stroke-width="12" stroke-linecap="round"/>
+          <path id="gauge-fill" d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="url(#gauge-grad)" stroke-width="12" stroke-linecap="round" stroke-dasharray="251.32" stroke-dashoffset="251.32"/>
+          <defs>
+            <linearGradient id="gauge-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:var(--red)"/>
+              <stop offset="50%" style="stop-color:var(--yellow)"/>
+              <stop offset="100%" style="stop-color:var(--green)"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="gauge-score" id="paydex-val">80</div>
+      </div>
+      <div class="gauge-label">Target Paydex Score</div>
+      <div class="paydex-examples">
+        <div class="paydex-card active" data-score="80">
+          <div class="paydex-score">80</div>
+          <div class="paydex-desc">Standard Net-30 Approval</div>
+        </div>
+        <div class="paydex-card" data-score="90">
+          <div class="paydex-score">90</div>
+          <div class="paydex-desc">Tier 2 Retail Credit</div>
+        </div>
+        <div class="paydex-card" data-score="100">
+          <div class="paydex-score">100</div>
+          <div class="paydex-desc">Max Funding Capacity</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section intelli-section">
+  <div class="container">
+    <div class="text-center">
+      <span class="section-label">Deep Dive</span>
+      <h2 class="section-title">Intelliscore Profile Comparison</h2>
+    </div>
+    <div class="intelli-grid">
+      <div class="profile-card weak animate-on-scroll">
+        <div class="profile-header">
+          <div class="profile-icon" aria-hidden="true">⚠️</div>
+          <h4>High Risk Profile</h4>
+        </div>
+        <div class="profile-stat"><span>Public Records</span><span>2 Found</span></div>
+        <div class="profile-stat"><span>Time in Business</span><span>6 Months</span></div>
+        <div class="profile-stat"><span>Payment Delinquency</span><span>Frequent</span></div>
+        <div class="funding-meter">
+          <div class="funding-meter-text text-red">Approval Likelihood: 15%</div>
+          <div class="funding-meter-bar"><div class="funding-meter-fill bg-red" style="width: 15%;"></div></div>
+        </div>
+      </div>
+      <div class="profile-card strong animate-on-scroll">
+        <div class="profile-header">
+          <div class="profile-icon" aria-hidden="true">✅</div>
+          <h4>Low Risk Profile</h4>
+        </div>
+        <div class="profile-stat"><span>Public Records</span><span>None</span></div>
+        <div class="profile-stat"><span>Time in Business</span><span>3+ Years</span></div>
+        <div class="profile-stat"><span>Payment Delinquency</span><span>0%</span></div>
+        <div class="funding-meter">
+          <div class="funding-meter-text text-green">Approval Likelihood: 92%</div>
+          <div class="funding-meter-bar"><div class="funding-meter-fill bg-green" style="width: 92%;"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section cases-section" id="case-studies">
+  <div class="container">
+    <span class="section-label">Success Stories</span>
+    <h2 class="section-title">Blueprint Results</h2>
+    <div class="cases-scroll">
+      <div class="case-card">
+        <span class="case-type personal">Personal Credit</span>
+        <h4>610 to 745 in 90 Days</h4>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-marker">1</div>
+            <div class="timeline-content"><h5>Month 1</h5><p>Removed 4 collections and 2 late payments.</p></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">2</div>
+            <div class="timeline-content"><h5>Month 2</h5><p>Strategic utilization hack applied (30% to 2%).</p></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">3</div>
+            <div class="timeline-content"><h5>Month 3</h5><p>Approved for $15k Chase Sapphire Preferred.</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="case-card">
+        <span class="case-type business">Business Credit</span>
+        <h4>$120k Funding in 6 Months</h4>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-marker">1</div>
+            <div class="timeline-content"><h5>Phase 1</h5><p>LLC setup and Tier 1 vendor tradelines.</p></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">2</div>
+            <div class="timeline-content"><h5>Phase 2</h5><p>Generated 80 Paydex score with Dun & Bradstreet.</p></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">3</div>
+            <div class="timeline-content"><h5>Phase 3</h5><p>Secured $50k BLOC and $70k in 0% Credit Cards.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section pricing-section" id="pricing">
+  <div class="container">
+    <div class="text-center">
+      <span class="section-label">Ready to Build?</span>
+      <h2 class="section-title">Choose Your Path</h2>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card animate-on-scroll">
+        <h3>Starter Blueprint</h3>
+        <div class="price">$497<span>/one-time</span></div>
+        <ul class="pricing-features">
+          <li>Personal Credit Repair Guide</li>
+          <li>DIY Business Credit Checklist</li>
+          <li>Vendor List (Tier 1 & 2)</li>
+          <li>Email Support</li>
+        </ul>
+        <a href="#" class="btn btn-outline btn-full">Get Started</a>
+      </div>
+      <div class="pricing-card popular animate-on-scroll">
+        <div class="popular-badge">Most Popular</div>
+        <h3>The Masterclass</h3>
+        <div class="price">$997<span>/one-time</span></div>
+        <ul class="pricing-features">
+          <li>Everything in Starter</li>
+          <li>Funding Lender Directory</li>
+          <li>LLC Optimization Session</li>
+          <li>Private Discord Community</li>
+          <li>Bi-Weekly Group Coaching</li>
+        </ul>
+        <a href="#" class="btn btn-primary btn-full">Get Started</a>
+      </div>
+      <div class="pricing-card animate-on-scroll">
+        <h3>Concierge (Done-For-You)</h3>
+        <div class="price">$2,997<span>/one-time</span></div>
+        <ul class="pricing-features">
+          <li>We build your business credit</li>
+          <li>Direct Funding Application Prep</li>
+          <li>Credit Monitoring Included</li>
+          <li>1-on-1 Dedicated Specialist</li>
+          <li>Guaranteed Tradeline Placement</li>
+        </ul>
+        <a href="#" class="btn btn-outline btn-full">Get Started</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="logo text-white">
+          <div class="logo-icon">B</div>
+          <span>Credit Blueprint</span>
+        </a>
+        <p>Providing the education and resources entrepreneurs need to dominate the credit game and build generational wealth.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Solutions</h4>
+        <ul>
+          <li><a href="#">Personal Credit</a></li>
+          <li><a href="#">Business Credit</a></li>
+          <li><a href="#">Funding Strategies</a></li>
+          <li><a href="#">Tradelines</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Success Stories</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="#">support@creditblueprint.com</a></li>
+          <li><a href="#">1-800-CREDIT-9</a></li>
+          <li><a href="#">Schedule a Call</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 Credit Blueprint. All rights reserved.</p>
+      <div class="footer-socials">
+        <a href="#" class="footer-social-link">Instagram</a>
+        <a href="#" class="footer-social-link">YouTube</a>
+        <a href="#" class="footer-social-link">Twitter</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Navbar Scroll Effect
+const nav = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 50) {
+    nav.classList.add('scrolled');
+  } else {
+    nav.classList.remove('scrolled');
+  }
+});
+
+// Scroll Animations
+const observerOptions = {
+  threshold: 0.1,
+  rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      if (entry.target.id === 'hero-score-bar') {
+        entry.target.classList.add('animate');
+      }
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll('.animate-on-scroll, #hero-score-bar').forEach(el => observer.observe(el));
+
+// FICO Simulator Logic
+// Cache DOM Elements for Simulator
+const simUtil = document.getElementById('sim-util');
+const simMissed = document.getElementById('sim-missed');
+const simAge = document.getElementById('sim-age');
+const utilVal = document.getElementById('util-val');
+const missedVal = document.getElementById('missed-val');
+const ageVal = document.getElementById('age-val');
+const simScore = document.getElementById('sim-score');
+const simMeter = document.getElementById('sim-meter');
+
+// Cache DOM Elements for Calculator
+const calcRev = document.getElementById('calc-rev');
+const calcTime = document.getElementById('calc-time');
+const calcCredit = document.getElementById('calc-credit');
+const calcDebt = document.getElementById('calc-debt');
+const fundTotal = document.getElementById('fund-total');
+const fundStatus = document.getElementById('fund-status');
+
+// Attach event listeners
+[simUtil, simMissed, simAge].forEach(el => el.addEventListener('input', updateSimulator));
+[calcRev, calcTime, calcCredit, calcDebt].forEach(el => el.addEventListener('input', calculateFunding));
+
+document.querySelectorAll('.paydex-card').forEach(card => {
+  card.addEventListener('click', function() {
+    selectPaydex(parseInt(this.getAttribute('data-score')), this);
+  });
+});
+
+function updateSimulator() {
+  const util = parseInt(simUtil.value, 10);
+  const missed = parseInt(simMissed.value, 10);
+  const age = parseInt(simAge.value, 10);
+
+  utilVal.textContent = `${util}%`;
+  missedVal.textContent = missed;
+  ageVal.textContent = `${age} Years`;
+
+  // Basic Score Algorithm (Simplified for Demo)
+  let score = 750;
+
+  if (util <= 10) score += 20;
+  else if (util > 30) score -= (util - 30) * 2.5;
+
+  score -= missed * 60;
+  score += (age * 2.5);
+
+  score = Math.max(300, Math.min(850, Math.round(score)));
+
+  simScore.textContent = score;
+
+  if (score >= 740) {
+    simMeter.textContent = 'Excellent';
+    simMeter.style.background = 'var(--green-light)';
+    simMeter.style.color = 'var(--green)';
+    simScore.style.color = 'var(--green)';
+  } else if (score >= 670) {
+    simMeter.textContent = 'Good';
+    simMeter.style.background = 'var(--blue-50)';
+    simMeter.style.color = 'var(--blue-500)';
+    simScore.style.color = 'var(--blue-500)';
+  } else if (score >= 580) {
+    simMeter.textContent = 'Fair';
+    simMeter.style.background = 'var(--yellow-light)';
+    simMeter.style.color = 'var(--yellow)';
+    simScore.style.color = 'var(--yellow)';
+  } else {
+    simMeter.textContent = 'Poor';
+    simMeter.style.background = 'var(--red-light)';
+    simMeter.style.color = 'var(--red)';
+    simScore.style.color = 'var(--red)';
+  }
+}
+
+// Funding Calculator Logic
+function calculateFunding() {
+  const rev = parseFloat(calcRev.value) || 0;
+  const time = parseFloat(calcTime.value) || 0;
+  const credit = parseFloat(calcCredit.value) || 0;
+  const debt = parseFloat(calcDebt.value) || 0;
+
+  let multiplier = 0;
+  if (credit >= 720) multiplier = 3.5;
+  else if (credit >= 680) multiplier = 2.0;
+  else if (credit >= 650) multiplier = 1.0;
+  else multiplier = 0.5;
+
+  if (time < 6) multiplier *= 0.5;
+  else if (time < 24) multiplier *= 0.8;
+
+  let totalFunding = rev * multiplier;
+
+  const dti = (debt / rev) || 0;
+  if (dti > 0.4) totalFunding *= 0.5;
+
+  fundTotal.textContent = '$' + Math.round(totalFunding).toLocaleString();
+
+  if (credit >= 700 && rev >= 10000) {
+    fundStatus.textContent = 'High Approval Odds';
+    fundStatus.className = 'approval-badge approval-high';
+  } else if (credit >= 650 || rev >= 5000) {
+    fundStatus.textContent = 'Moderate Approval Odds';
+    fundStatus.className = 'approval-badge approval-mid';
+  } else {
+    fundStatus.textContent = 'Low Approval Odds';
+    fundStatus.className = 'approval-badge approval-low';
+  }
+}
+
+// Paydex Gauge Logic
+function selectPaydex(score, el) {
+  document.querySelectorAll('.paydex-card').forEach(card => card.classList.remove('active'));
+  el.classList.add('active');
+
+  const val = document.getElementById('paydex-val');
+  const fill = document.getElementById('gauge-fill');
+
+  // Animate number
+  let current = parseInt(val.innerText);
+  const target = score;
+  const duration = 1000;
+  const start = performance.now();
+
+  function animate(time) {
+    const elapsed = time - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    const now = Math.round(current + (target - current) * ease);
+
+    val.innerText = now;
+
+    // SVG Dashoffset: circumference is ~251.32. Max score 100 is 0 offset. 0 score is 251.32 offset.
+    const offset = 251.32 - (251.32 * (now / 100));
+    fill.style.strokeDashoffset = offset;
+
+    if (progress < 1) requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+}
+
+// Initialize
+updateSimulator();
+calculateFunding();
+setTimeout(() => selectPaydex(80, document.querySelector('.paydex-card.active')), 500);
+</script>
+
+</body>
+</html>
